@@ -19,9 +19,14 @@ export default function Sidebar() {
 
   return (
     <aside className="hidden md:flex md:w-64 md:h-screen md:fixed md:left-0 md:top-0 bg-gray-900 text-white">
-      <div className="w-full p-6 flex flex-col gap-6">
-        <Link to="/" className="text-xl font-semibold tracking-wide">
-        Managing App
+      <div className="w-full p-6 flex flex-col gap-6 items-start">
+        <Link to="/" className="flex justify-center items-center gap-2 text-left">
+          <div className="bg-transparent flex items-center justify-center ">
+            <div className="font-bold text-2xl">🔥</div>
+          </div>
+          <h1 className="text-xl font-semibold tracking-wide">
+            Axio-Manage
+          </h1>
         </Link>
 
         <nav className="flex flex-col gap-3">

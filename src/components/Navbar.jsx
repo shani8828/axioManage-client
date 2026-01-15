@@ -27,12 +27,12 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
         
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md shadow-blue-500/40">
-            <span className="text-white font-bold">A</span>
+        <Link to="/" className="flex justify-center items-center gap-2">
+          <div className="bg-transparent flex items-center justify-center ">
+            <div className="text-2xl font-bold">🔥</div>
           </div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Amplifier
+            Axio-Manage
           </h1>
         </Link>
 

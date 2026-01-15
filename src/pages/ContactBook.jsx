@@ -1,18 +1,33 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 
 const STORAGE_KEY = "contact_book_data";
 
 export default function ContactBook() {
   const [contacts, setContacts] = useState([]);
   const [search, setSearch] = useState("");
-  const [form, setForm] = useState({ name: "", phone: "", email: "", notes: "" });
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    notes: "",
+  });
   const [editingId, setEditingId] = useState(null);
 
+  // load from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) setContacts(JSON.parse(saved));
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        setContacts(JSON.parse(saved));
+        toast.success("Contacts loaded");
+      }
+    } catch {
+      toast.error("Failed to load contacts");
+    }
   }, []);
 
+  // save to localStorage
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(contacts));
   }, [contacts]);
@@ -23,14 +38,19 @@ export default function ContactBook() {
   };
 
   const saveContact = () => {
-    if (!form.name || !form.phone) return;
+    if (!form.name || !form.phone) {
+      toast.error("Name and phone are required");
+      return;
+    }
 
     if (editingId) {
-      setContacts(prev =>
-        prev.map(c => (c.id === editingId ? { ...c, ...form } : c))
+      setContacts((prev) =>
+        prev.map((c) => (c.id === editingId ? { ...c, ...form } : c))
       );
+      toast.success("Contact updated");
     } else {
-      setContacts(prev => [{ id: Date.now(), ...form }, ...prev]);
+      setContacts((prev) => [{ id: Date.now(), ...form }, ...prev]);
+      toast.success("Contact added");
     }
 
     resetForm();
@@ -38,20 +58,39 @@ export default function ContactBook() {
 
   const editContact = (c) => {
     setEditingId(c.id);
-    setForm({ name: c.name, phone: c.phone, email: c.email, notes: c.notes });
+    setForm({
+      name: c.name,
+      phone: c.phone,
+      email: c.email,
+      notes: c.notes,
+    });
+    toast("Editing contact ✏️");
   };
 
-  const deleteContact = (id) => setContacts(prev => prev.filter(c => c.id !== id));
+  const deleteContact = (id) => {
+    setContacts((prev) => prev.filter((c) => c.id !== id));
+    toast.success("Contact deleted");
+  };
 
-  const filteredContacts = contacts.filter(c =>
-    c.name.toLowerCase().includes(search.toLowerCase()) || c.phone.includes(search)
+  const filteredContacts = contacts.filter(
+    (c) =>
+      c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.phone.includes(search)
   );
 
   return (
-    <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white dark:bg-slate-800 rounded-xl shadow space-y-6">
+    <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-transparent space-y-6">
       {/* Header + Search */}
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Contact Book</h2>
+        <header className="space-y-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Contact Book
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            Save and manage all your contacts in one place, instantly
+            searchable.
+          </p>
+        </header>
         <input
           placeholder="Search..."
           value={search}
@@ -98,7 +137,9 @@ export default function ContactBook() {
       {/* Contact List */}
       <ul className="space-y-3">
         {filteredContacts.length === 0 && (
-          <p className="text-center text-gray-500 dark:text-gray-400">No contacts found.</p>
+          <p className="text-center text-gray-500 dark:text-gray-400">
+            No contacts found.
+          </p>
         )}
 
         {filteredContacts.map((c) => (
@@ -107,11 +148,17 @@ export default function ContactBook() {
             className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border rounded-md bg-gray-50 dark:bg-slate-700"
           >
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-900 dark:text-white truncate">{c.name}</p>
+              <p className="font-medium text-gray-900 dark:text-white truncate">
+                {c.name}
+              </p>
               <p className="text-sm text-gray-500 dark:text-gray-300 truncate">
                 {c.phone} {c.email && `• ${c.email}`}
               </p>
-              {c.notes && <p className="text-xs text-gray-400 dark:text-gray-400 truncate">{c.notes}</p>}
+              {c.notes && (
+                <p className="text-xs text-gray-400 dark:text-gray-400 truncate">
+                  {c.notes}
+                </p>
+              )}
             </div>
 
             <div className="flex gap-2 mt-2 sm:mt-0 flex-wrap">

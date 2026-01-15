@@ -98,9 +98,16 @@ export default function ExpenseTracker() {
   }, [expenses]);
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white rounded-xl shadow space-y-8">
+    <div className="max-w-6xl mx-auto p-6  space-y-8">
       <header className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold">Expense Tracker</h2>
+        <header className="space-y-2">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          Expense Tracker
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">
+          Track your expenses and manage your budget.
+        </p>
+      </header>
         <span className="text-lg font-medium text-green-600">
           Total ₹{totalAmount}
         </span>

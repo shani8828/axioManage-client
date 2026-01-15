@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const STORAGE_KEY = "diary_entries";
 
@@ -9,8 +10,12 @@ export default function Diary() {
 
   // Load from cache
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    setEntries(saved);
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      setEntries(saved);
+    } catch {
+      toast.error("Failed to load diary entries.");
+    }
   }, []);
 
   // Save to cache
@@ -19,24 +24,29 @@ export default function Diary() {
   }, [entries]);
 
   const handleAddOrUpdate = () => {
-    if (!text.trim()) return;
+    if (!text.trim()) {
+      toast.error("Please write something before saving.");
+      return;
+    }
 
     if (editingId) {
-      setEntries(entries.map(entry =>
-        entry.id === editingId
-          ? { ...entry, content: text }
-          : entry
-      ));
+      setEntries((prev) =>
+        prev.map((entry) =>
+          entry.id === editingId ? { ...entry, content: text } : entry
+        )
+      );
+      toast.success("Entry updated");
       setEditingId(null);
     } else {
-      setEntries([
+      setEntries((prev) => [
         {
           id: crypto.randomUUID(),
           content: text,
           date: new Date().toLocaleString(),
         },
-        ...entries,
+        ...prev,
       ]);
+      toast.success("Entry saved");
     }
 
     setText("");
@@ -45,10 +55,12 @@ export default function Diary() {
   const handleEdit = (entry) => {
     setText(entry.content);
     setEditingId(entry.id);
+    toast("Editing entry ✏️", { icon: "📝" });
   };
 
   const handleDelete = (id) => {
-    setEntries(entries.filter(entry => entry.id !== id));
+    setEntries((prev) => prev.filter((entry) => entry.id !== id));
+    toast.success("Entry deleted");
   };
 
   return (
@@ -81,19 +93,15 @@ export default function Diary() {
       {/* Entries */}
       <div className="space-y-4">
         {entries.length === 0 && (
-          <p className="text-gray-500">
-            No diary entries yet. Start writing.
-          </p>
+          <p className="text-gray-500">No diary entries yet. Start writing.</p>
         )}
 
-        {entries.map(entry => (
+        {entries.map((entry) => (
           <article
             key={entry.id}
             className="p-4 border rounded-lg bg-white space-y-2"
           >
-            <p className="text-gray-800 whitespace-pre-wrap">
-              {entry.content}
-            </p>
+            <p className="text-gray-800 whitespace-pre-wrap">{entry.content}</p>
 
             <div className="flex justify-between items-center text-sm text-gray-500">
               <span>{entry.date}</span>

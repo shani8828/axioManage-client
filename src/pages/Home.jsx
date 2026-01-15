@@ -40,14 +40,14 @@ const apps = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 md:px-12  space-y-16">
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 md:px-12 py-14 space-y-16">
       {/* Welcome Section */}
       <section className="max-w-4xl mx-auto space-y-6 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold">Welcome to Your Personal Hub</h1>
+        <h1 className="text-4xl md:text-5xl font-bold">Welcome to Axio-Manage</h1>
         <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-          This app helps you manage your daily life with five powerful utilities:
+          This helps you manage your daily life with 5 powerful utilities:
           keep track of tasks, maintain a diary, track your habits, monitor expenses,
-          and save contacts — all in one place.
+          and save contacts - all in one place.
         </p>
       </section>
 

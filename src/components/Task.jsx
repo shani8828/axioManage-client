@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 
 export default function Task({ listId }) {
   const STORAGE_KEY = `mern_tasks_${listId}`;
@@ -8,6 +9,7 @@ export default function Task({ listId }) {
       const saved = localStorage.getItem(STORAGE_KEY);
       return saved ? JSON.parse(saved) : [];
     } catch {
+      toast.error("Failed to load tasks");
       return [];
     }
   });
@@ -16,14 +18,17 @@ export default function Task({ listId }) {
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
 
-  // Persist to localStorage
+  // persist to localStorage
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
   }, [tasks]);
 
-  // Create
+  // create
   const addTask = () => {
-    if (!input.trim()) return;
+    if (!input.trim()) {
+      toast.error("Task cannot be empty");
+      return;
+    }
 
     setTasks((prev) => [
       ...prev,
@@ -35,31 +40,39 @@ export default function Task({ listId }) {
       },
     ]);
 
+    toast.success("Task added");
     setInput("");
   };
 
-  // Toggle done
+  // toggle done
   const toggleDone = (id) => {
     setTasks((prev) =>
       prev.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
       )
     );
+
+    const task = tasks.find((t) => t.id === id);
+    toast.success(task?.completed ? "Task marked pending" : "Task completed");
   };
 
-  // Delete
+  // delete
   const deleteTask = (id) => {
     setTasks((prev) => prev.filter((task) => task.id !== id));
+    toast.success("Task deleted");
   };
 
-  // Edit
+  // edit
   const startEdit = (task) => {
     setEditingId(task.id);
     setEditingText(task.text);
   };
 
   const updateTask = () => {
-    if (!editingText.trim()) return;
+    if (!editingText.trim()) {
+      toast.error("Task text cannot be empty");
+      return;
+    }
 
     setTasks((prev) =>
       prev.map((task) =>
@@ -67,13 +80,13 @@ export default function Task({ listId }) {
       )
     );
 
+    toast.success("Task updated");
     setEditingId(null);
     setEditingText("");
   };
 
   return (
     <div className="space-y-4 w-full max-w-md mx-auto">
-      
       {/* Add Task */}
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         <input
