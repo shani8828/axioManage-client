@@ -42,7 +42,7 @@ export default function Login() {
       toast.success("Logged in with Google!");
       navigate("/");
     } catch (err) {
-      toast.error("Google authentication failed");
+      toast.error("Google authentication failed Client-side.");
     }
   };
 
