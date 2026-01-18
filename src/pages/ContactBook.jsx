@@ -1,7 +1,20 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-
-const STORAGE_KEY = "contact_book_data";
+import api from "../utils/api";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  UserPlus,
+  Search,
+  Phone,
+  Mail,
+  FileText,
+  User,
+  Trash2,
+  Edit3,
+  Check,
+  X,
+  Contact2,
+} from "lucide-react";
 
 export default function ContactBook() {
   const [contacts, setContacts] = useState([]);
@@ -13,171 +26,287 @@ export default function ContactBook() {
     notes: "",
   });
   const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
-  // load from localStorage
-  useEffect(() => {
+  const fetchContacts = async () => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        setContacts(JSON.parse(saved));
-        toast.success("Contacts loaded");
-      }
+      setLoading(true);
+      const data = await api.get("/contacts");
+      setContacts(data);
     } catch {
       toast.error("Failed to load contacts");
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  };
 
-  // save to localStorage
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(contacts));
-  }, [contacts]);
+    fetchContacts();
+  }, []);
 
   const resetForm = () => {
     setForm({ name: "", phone: "", email: "", notes: "" });
     setEditingId(null);
+    setIsFormOpen(false);
   };
 
-  const saveContact = () => {
+  const saveContact = async () => {
     if (!form.name || !form.phone) {
       toast.error("Name and phone are required");
       return;
     }
 
-    if (editingId) {
-      setContacts((prev) =>
-        prev.map((c) => (c.id === editingId ? { ...c, ...form } : c))
-      );
-      toast.success("Contact updated");
-    } else {
-      setContacts((prev) => [{ id: Date.now(), ...form }, ...prev]);
-      toast.success("Contact added");
+    try {
+      if (editingId) {
+        await api.put(`/contacts/${editingId}`, form);
+        toast.success("Contact updated");
+      } else {
+        await api.post("/contacts", form);
+        toast.success("Contact added");
+      }
+      resetForm();
+      fetchContacts();
+    } catch {
+      toast.error("Something went wrong");
     }
-
-    resetForm();
   };
 
-  const editContact = (c) => {
-    setEditingId(c.id);
+  const deleteContact = async (id) => {
+    try {
+      await api.delete(`/contacts/${id}`);
+      setContacts((prev) => prev.filter((c) => c._id !== id));
+      toast.success("Contact deleted");
+    } catch {
+      toast.error("Failed to delete contact");
+    }
+  };
+
+  const startEdit = (c) => {
+    setEditingId(c._id);
     setForm({
       name: c.name,
       phone: c.phone,
-      email: c.email,
-      notes: c.notes,
+      email: c.email || "",
+      notes: c.notes || "",
     });
-    toast("Editing contact ✏️");
-  };
-
-  const deleteContact = (id) => {
-    setContacts((prev) => prev.filter((c) => c.id !== id));
-    toast.success("Contact deleted");
+    setIsFormOpen(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const filteredContacts = contacts.filter(
     (c) =>
       c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.phone.includes(search)
+      c.phone.includes(search),
   );
 
   return (
-    <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-transparent space-y-6">
-      {/* Header + Search */}
-      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <header className="space-y-2">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Contact Book
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
-            Save and manage all your contacts in one place, instantly
-            searchable.
-          </p>
-        </header>
-        <input
-          placeholder="Search..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border rounded px-3 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </header>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+      {/* Header */}
+      <motion.header
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"
+      >
+        <div className="space-y-2">
+          <div className="flex items-start gap-4">
+            <div className="rounded-2xl bg-gradient-to-br from-purple-500 to-rose-600 p-3 shadow-lg shadow-purple-500/30">
+              <Contact2 className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">
+                Axio-Contacts
+              </h1>
+              <p className="text-slate-500 text-sm font-medium">
+                Organize people you work with and care about, all in one private
+                space.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name or phone"
+            className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-500/10"
+          />
+        </div>
+      </motion.header>
 
-      {/* Form */}
-      <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
-        <input
-          placeholder="Name"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          className="flex-1 min-w-[120px] border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <input
-          placeholder="Phone"
-          value={form.phone}
-          onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          className="flex-1 min-w-[120px] border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <input
-          placeholder="Email"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          className="flex-1 min-w-[120px] border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <input
-          placeholder="Notes"
-          value={form.notes}
-          onChange={(e) => setForm({ ...form, notes: e.target.value })}
-          className="flex-1 min-w-[120px] border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
+      {/* Form Card */}
+      <motion.div
+        layout
+        className="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-xl shadow-slate-200/60"
+      >
+        <button
+          onClick={() => setIsFormOpen((v) => !v)}
+          className="flex w-full items-center justify-between px-8 py-6 font-bold text-slate-700 hover:bg-slate-50"
+        >
+          <div className="flex items-center gap-3">
+            {editingId ? (
+              <Edit3 className="h-5 w-5 text-purple-500" />
+            ) : (
+              <UserPlus className="h-5 w-5 text-purple-500" />
+            )}
+            {editingId ? "Edit Contact" : "Add New Contact"}
+          </div>
+          <motion.div animate={{ rotate: isFormOpen ? 180 : 0 }}>
+            <X
+              className={`h-5 w-5 ${isFormOpen ? "opacity-100" : "opacity-0"}`}
+            />
+          </motion.div>
+        </button>
+
+        <AnimatePresence>
+          {isFormOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="px-8 pb-8"
+            >
+              <div className="grid grid-cols-1 gap-6 pt-6 md:grid-cols-2">
+                <Input
+                  icon={User}
+                  label="Full Name"
+                  value={form.name}
+                  onChange={(v) => setForm({ ...form, name: v })}
+                  placeholder="John Doe"
+                />
+                <Input
+                  icon={Phone}
+                  label="Phone Number"
+                  value={form.phone}
+                  onChange={(v) => setForm({ ...form, phone: v })}
+                  placeholder="+91 98765 43210"
+                />
+                <Input
+                  icon={Mail}
+                  label="Email Address"
+                  value={form.email}
+                  onChange={(v) => setForm({ ...form, email: v })}
+                  placeholder="john@email.com"
+                />
+                <Input
+                  icon={FileText}
+                  label="Notes"
+                  value={form.notes}
+                  onChange={(v) => setForm({ ...form, notes: v })}
+                  placeholder="Client, colleague, vendor…"
+                />
+              </div>
+
+              <div className="mt-10 flex gap-3">
+                <button
+                  onClick={saveContact}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-500 to-rose-600 py-3 font-bold text-white shadow-lg shadow-purple-500/30 hover:brightness-110"
+                >
+                  <Check className="h-5 w-5" />
+                  {editingId ? "Update Contact" : "Save Contact"}
+                </button>
+
+                {editingId && (
+                  <button
+                    onClick={resetForm}
+                    className="rounded-xl bg-slate-100 px-6 py-3 font-bold text-slate-600 hover:bg-slate-200"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Contact Grid */}
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <AnimatePresence mode="popLayout">
+          {filteredContacts.map((c, i) => (
+            <motion.div
+              key={c._id}
+              layout
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ delay: i * 0.04 }}
+              className="group flex items-center justify-between rounded-[2.25rem] border border-slate-100 bg-white p-6 shadow-sm hover:shadow-xl hover:shadow-slate-200/60"
+            >
+              <div className="flex items-center gap-4 min-w-0">
+                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-400 to-rose-500 text-xl font-black text-white">
+                  {c.name[0].toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <h3 className="truncate font-bold text-slate-800">
+                    {c.name}
+                  </h3>
+                  <div className="mt-1 space-y-0.5 text-sm text-slate-500">
+                    <div className="flex items-center gap-1.5">
+                      <Phone className="h-3 w-3 text-purple-400" />
+                      {c.phone}
+                    </div>
+                    {c.email && (
+                      <div className="flex items-center gap-1.5 truncate">
+                        <Mail className="h-3 w-3 text-purple-400" />
+                        {c.email}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="ml-3 flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
+                <button
+                  onClick={() => startEdit(c)}
+                  className="rounded-xl p-2.5 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600"
+                >
+                  <Edit3 className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => deleteContact(c._id)}
+                  className="rounded-xl p-2.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
-      <button
-        onClick={saveContact}
-        className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition w-full sm:w-auto"
-      >
-        {editingId ? "Update Contact" : "Add Contact"}
-      </button>
-
-      {/* Contact List */}
-      <ul className="space-y-3">
-        {filteredContacts.length === 0 && (
-          <p className="text-center text-gray-500 dark:text-gray-400">
-            No contacts found.
-          </p>
-        )}
-
-        {filteredContacts.map((c) => (
-          <li
-            key={c.id}
-            className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border rounded-md bg-gray-50 dark:bg-slate-700"
+      {loading && (
+        <div className="py-14 text-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1 }}
+            className="inline-block"
           >
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-900 dark:text-white truncate">
-                {c.name}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-300 truncate">
-                {c.phone} {c.email && `• ${c.email}`}
-              </p>
-              {c.notes && (
-                <p className="text-xs text-gray-400 dark:text-gray-400 truncate">
-                  {c.notes}
-                </p>
-              )}
-            </div>
+            <Contact2 className="h-8 w-8 text-purple-300" />
+          </motion.div>
+        </div>
+      )}
+    </div>
+  );
+}
 
-            <div className="flex gap-2 mt-2 sm:mt-0 flex-wrap">
-              <button
-                onClick={() => editContact(c)}
-                className="px-3 py-1 bg-yellow-500 text-white rounded text-sm hover:bg-yellow-600 transition"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => deleteContact(c.id)}
-                className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition"
-              >
-                Delete
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+/* Controlled input */
+function Input({ icon: Icon, label, value, onChange, placeholder }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="ml-1 text-xs font-bold uppercase tracking-wide text-slate-400">
+        {label}
+      </label>
+      <div className="relative">
+        <Icon className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" />
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="w-full rounded-xl bg-slate-50 py-3 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+      </div>
     </div>
   );
 }

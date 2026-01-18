@@ -1,27 +1,41 @@
 import { useEffect, useMemo, useState } from "react";
-
-const STORAGE_KEY = "expense_tracker_data";
+import toast from "react-hot-toast";
+import api from "../utils/api";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Wallet,
+  Plus,
+  Trash2,
+  Edit3,
+  TrendingUp,
+  PieChart,
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  IndianRupee,
+} from "lucide-react";
 
 export default function ExpenseTracker() {
   const [expenses, setExpenses] = useState([]);
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("General");
-  const [date, setDate] = useState(() =>
-    new Date().toISOString().slice(0, 10)
-  );
+  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [editingId, setEditingId] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
-  // Load
+  const fetchExpenses = async () => {
+    try {
+      const data = await api.get("/expenses");
+      setExpenses(data);
+    } catch {
+      toast.error("Failed to load expenses");
+    }
+  };
+
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) setExpenses(JSON.parse(saved));
+    fetchExpenses();
   }, []);
-
-  // Save
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
-  }, [expenses]);
 
   const resetForm = () => {
     setTitle("");
@@ -29,52 +43,60 @@ export default function ExpenseTracker() {
     setCategory("General");
     setDate(new Date().toISOString().slice(0, 10));
     setEditingId(null);
+    setIsFormOpen(false);
   };
 
-  const addOrUpdateExpense = () => {
-    if (!title || !amount) return;
-
-    if (editingId) {
-      setExpenses((prev) =>
-        prev.map((e) =>
-          e.id === editingId
-            ? { ...e, title, amount: Number(amount), category, date }
-            : e
-        )
-      );
-    } else {
-      setExpenses((prev) => [
-        {
-          id: Date.now(),
-          title,
-          amount: Number(amount),
-          category,
-          date,
-        },
-        ...prev,
-      ]);
+  const addOrUpdateExpense = async () => {
+    if (!title || !amount) {
+      toast.error("Title and amount are required");
+      return;
     }
 
-    resetForm();
+    const payload = {
+      title,
+      amount: Number(amount),
+      category,
+      date,
+    };
+
+    try {
+      if (editingId) {
+        await api.put(`/expenses/${editingId}`, payload);
+        toast.success("Expense updated");
+      } else {
+        await api.post("/expenses", payload);
+        toast.success("Expense added");
+      }
+      resetForm();
+      fetchExpenses();
+    } catch {
+      toast.error("Something went wrong");
+    }
   };
 
-  const editExpense = (e) => {
-    setEditingId(e.id);
+  const startEdit = (e) => {
+    setEditingId(e._id);
     setTitle(e.title);
     setAmount(e.amount);
     setCategory(e.category);
     setDate(e.date);
+    setIsFormOpen(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const deleteExpense = (id) => {
-    setExpenses((prev) => prev.filter((e) => e.id !== id));
+  const deleteExpense = async (id) => {
+    try {
+      await api.delete(`/expenses/${id}`);
+      toast.success("Expense deleted");
+      fetchExpenses();
+    } catch {
+      toast.error("Failed to delete");
+    }
   };
-
-  /* ------------------ ANALYTICS ------------------ */
 
   const totalAmount = useMemo(
     () => expenses.reduce((sum, e) => sum + e.amount, 0),
-    [expenses]
+    [expenses],
   );
 
   const categoryTotals = useMemo(() => {
@@ -84,148 +106,215 @@ export default function ExpenseTracker() {
     }, {});
   }, [expenses]);
 
-  const maxCategoryValue = Math.max(
-    ...Object.values(categoryTotals),
-    1
-  );
-
-  const monthlyTotals = useMemo(() => {
-    return expenses.reduce((acc, e) => {
-      const month = e.date.slice(0, 7); // YYYY-MM
-      acc[month] = (acc[month] || 0) + e.amount;
-      return acc;
-    }, {});
-  }, [expenses]);
+  const maxCategoryValue = Math.max(...Object.values(categoryTotals), 1);
 
   return (
-    <div className="max-w-6xl mx-auto p-6  space-y-8">
-      <header className="flex justify-between items-center">
-        <header className="space-y-2">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Expense Tracker
-        </h1>
-        <p className="text-gray-500 dark:text-gray-400 text-sm">
-          Track your expenses and manage your budget.
-        </p>
-      </header>
-        <span className="text-lg font-medium text-green-600">
-          Total ₹{totalAmount}
-        </span>
-      </header>
+    <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+      {/* Header */}
+      <motion.header
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+      >
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-2xl bg-blue-500 shadow-lg shadow-blue-500/25">
+            <Wallet className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">
+              Axio-Expense
+            </h1>
+            <p className="text-sm text-slate-500 font-medium">
+              Track spending. Stay in control.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 bg-white rounded-3xl border border-slate-200 px-6 py-4 shadow-lg shadow-slate-200/40">
+          <div className="p-2 rounded-full bg-emerald-100">
+            <TrendingUp className="w-5 h-5 text-emerald-600" />
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
+              Total Spent
+            </p>
+            <p className="text-2xl font-black text-slate-900">
+              ₹{totalAmount.toLocaleString()}
+            </p>
+          </div>
+        </div>
+      </motion.header>
 
       {/* Form */}
-      <div className="grid md:grid-cols-5 gap-3">
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Expense title"
-          className="border rounded px-3 py-2"
-        />
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="Amount"
-          className="border rounded px-3 py-2"
-        />
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="border rounded px-3 py-2"
-        >
-          <option>General</option>
-          <option>Food</option>
-          <option>Travel</option>
-          <option>Shopping</option>
-          <option>Bills</option>
-        </select>
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="border rounded px-3 py-2"
-        />
+      <motion.div
+        layout
+        className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/40 overflow-hidden"
+      >
         <button
-          onClick={addOrUpdateExpense}
-          className="bg-indigo-600 text-white rounded px-4"
+          onClick={() => setIsFormOpen(!isFormOpen)}
+          className="w-full px-6 sm:px-8 py-5 flex items-center justify-between hover:bg-slate-50 transition"
         >
-          {editingId ? "Update" : "Add"}
+          <div className="flex items-center gap-3 font-semibold text-slate-800">
+            <Plus
+              className={`w-5 h-5 transition-transform ${
+                isFormOpen ? "rotate-45 text-red-500" : "text-blue-500"
+              }`}
+            />
+            {editingId ? "Edit expense" : "Add new expense"}
+          </div>
+          {isFormOpen ? (
+            <ChevronUp className="w-5 h-5 text-slate-400" />
+          ) : (
+            <ChevronDown className="w-5 h-5 text-slate-400" />
+          )}
         </button>
-      </div>
 
-      {/* ------------------ CATEGORY BAR CHART ------------------ */}
-      <section className="space-y-4">
-        <h3 className="text-lg font-semibold">Category Breakdown</h3>
+        <AnimatePresence>
+          {isFormOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="px-6 sm:px-8 pb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
+            >
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Expense title"
+                className="lg:col-span-2 px-4 py-3 rounded-2xl bg-slate-50 focus:ring-2 focus:ring-blue-500/30 outline-none font-medium"
+              />
 
-        <div className="space-y-3">
-          {Object.entries(categoryTotals).map(([cat, amt]) => (
-            <div key={cat}>
-              <div className="flex justify-between text-sm mb-1">
-                <span>{cat}</span>
-                <span>₹{amt}</span>
-              </div>
-              <div className="w-full h-3 bg-gray-200 rounded">
-                <div
-                  className="h-3 bg-indigo-600 rounded transition-all"
-                  style={{
-                    width: `${(amt / maxCategoryValue) * 100}%`,
-                  }}
+              <div className="relative">
+                <span className="absolute left-4 top-3 text-slate-400 font-bold">
+                  ₹
+                </span>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0"
+                  className="w-full pl-8 pr-4 py-3 rounded-2xl bg-slate-50 focus:ring-2 focus:ring-blue-500/30 outline-none font-bold"
                 />
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
-      {/* ------------------ MONTHLY TREND ------------------ */}
-      <section className="space-y-4">
-        <h3 className="text-lg font-semibold">Monthly Spending</h3>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {Object.entries(monthlyTotals).map(([month, amt]) => (
-            <div
-              key={month}
-              className="p-3 border rounded-md text-center"
-            >
-              <p className="text-sm text-gray-500">{month}</p>
-              <p className="text-lg font-semibold">₹{amt}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ------------------ LIST ------------------ */}
-      <ul className="space-y-3">
-        {expenses.map((e) => (
-          <li
-            key={e.id}
-            className="p-3 border rounded-md flex justify-between items-center"
-          >
-            <div>
-              <p className="font-medium">{e.title}</p>
-              <p className="text-sm text-gray-500">
-                {e.category} • {e.date}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="font-semibold">₹{e.amount}</span>
-              <button
-                onClick={() => editExpense(e)}
-                className="px-3 py-1 bg-yellow-500 text-white rounded text-sm"
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="px-4 py-3 rounded-2xl bg-slate-50 focus:ring-2 focus:ring-blue-500/30 outline-none font-medium"
               >
-                Edit
-              </button>
+                {["General", "Food", "Travel", "Shopping", "Bills"].map((c) => (
+                  <option key={c}>{c}</option>
+                ))}
+              </select>
+
               <button
-                onClick={() => deleteExpense(e.id)}
-                className="px-3 py-1 bg-red-600 text-white rounded text-sm"
+                onClick={addOrUpdateExpense}
+                className="rounded-2xl bg-slate-900 text-white font-semibold hover:bg-blue-600 transition shadow-lg"
               >
-                Delete
+                {editingId ? "Update" : "Add"}
               </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Content */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+        {/* Analytics */}
+        <section className="bg-white rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-xl shadow-slate-200/40 overflow-hidden">
+          <div className="flex items-center gap-2 mb-5">
+            <PieChart className="w-5 h-5 text-blue-500 shrink-0" />
+            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-600">
+              Category Breakdown
+            </h3>
+          </div>
+
+          <div className="space-y-5">
+            {Object.entries(categoryTotals).map(([cat, amt]) => (
+              <div key={cat} className="space-y-2">
+                {/* Labels */}
+                <div className="flex items-start justify-between gap-3 text-sm font-semibold">
+                  <span className="text-slate-600 truncate max-w-[65%]">
+                    {cat}
+                  </span>
+                  <span className="text-slate-900 shrink-0">
+                    ₹{amt.toLocaleString()}
+                  </span>
+                </div>
+
+                {/* Progress bar */}
+                <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{
+                      width: `${Math.min(
+                        (amt / maxCategoryValue) * 100,
+                        100,
+                      )}%`,
+                    }}
+                    className="h-full bg-gradient-to-r from-blue-400 to-orange-500 rounded-full"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+        {/* List */}
+        <section className="lg:col-span-2 space-y-4">
+          <div className="flex items-center gap-2 px-2">
+            <Calendar className="w-4 h-4 text-slate-400" />
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              Recent expenses
+            </p>
+          </div>
+
+          <AnimatePresence mode="popLayout">
+            {expenses.map((e, idx) => (
+              <motion.article
+                key={e._id}
+                layout
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ delay: idx * 0.03 }}
+                className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition group flex items-center justify-between"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-blue-50 transition">
+                    <IndianRupee className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-800">{e.title}</p>
+                    <p className="text-[10px] uppercase tracking-wide text-slate-400">
+                      {e.category} • {new Date(e.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-6">
+                  <span className="text-lg font-black text-slate-900">
+                    ₹{e.amount.toLocaleString()}
+                  </span>
+                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
+                    <button
+                      onClick={() => startEdit(e)}
+                      className="p-2 rounded-xl hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 transition"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => deleteExpense(e._id)}
+                      className="p-2 rounded-xl hover:bg-red-50 text-slate-400 hover:text-red-600 transition"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </motion.article>
+            ))}
+          </AnimatePresence>
+        </section>
+      </div>
+    </section>
   );
 }

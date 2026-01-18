@@ -1,7 +1,18 @@
 import { useEffect, useState } from "react";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
+import api from "../utils/api";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Activity,
+  Plus,
+  Trash2,
+  Flame,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  CalendarDays,
+} from "lucide-react";
 
-const STORAGE_KEY = "habits_v3";
 const getLastNDays = (n = 30) => {
   const days = [];
   for (let i = n - 1; i >= 0; i--) {
@@ -15,141 +26,237 @@ const getLastNDays = (n = 30) => {
 export default function FullHabitDashboard() {
   const [habits, setHabits] = useState([]);
   const [name, setName] = useState("");
-
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const days = getLastNDays(30);
+  const today = new Date().toISOString().slice(0, 10);
+
+  const fetchHabits = async () => {
+    try {
+      const data = await api.get("/habits");
+      setHabits(data);
+    } catch {
+      toast.error("Failed to fetch habits");
+    }
+  };
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) setHabits(JSON.parse(saved));
+    fetchHabits();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
-  }, [habits]);
-
-  // Add Habit
-  const addHabit = () => {
+  const addHabit = async () => {
     if (!name.trim()) {
-      toast.error("Habit name cannot be empty!");
+      toast.error("Habit name cannot be empty");
       return;
     }
-
-    setHabits([
-      ...habits,
-      { id: crypto.randomUUID(), name: name.trim(), logs: {} },
-    ]);
-    toast.success(`Habit "${name}" added!`);
-    setName("");
+    try {
+      const newHabit = await api.post("/habits", { name: name.trim() });
+      setHabits([newHabit, ...habits]);
+      toast.success(`Habit "${name}" added`);
+      setName("");
+      setIsFormOpen(false);
+    } catch {
+      toast.error("Failed to add habit");
+    }
   };
 
-  // Toggle day
-  const toggleDay = (habitId, day) => {
-    setHabits(
-      habits.map((h) =>
-        h.id === habitId
-          ? { ...h, logs: { ...h.logs, [day]: !h.logs[day] } }
-          : h
-      )
-    );
-    const habit = habits.find((h) => h.id === habitId);
-    const state = habit?.logs[day] ? "unchecked" : "checked";
-    toast(`${habit?.name} for ${day} ${state}`, { icon: "✅" });
+  const toggleDay = async (habitId, day) => {
+    try {
+      setHabits((prev) =>
+        prev.map((h) =>
+          h._id === habitId
+            ? { ...h, logs: { ...h.logs, [day]: !h.logs?.[day] } }
+            : h,
+        ),
+      );
+
+      await api.patch(`/habits/${habitId}/toggle`, { day });
+
+      const habit = habits.find((h) => h._id === habitId);
+      toast(`${habit?.name}`, { icon: "✅", duration: 800 });
+    } catch {
+      toast.error("Failed to toggle habit");
+      fetchHabits();
+    }
   };
 
-  // Delete Habit
-  const deleteHabit = (id) => {
-    const habit = habits.find((h) => h.id === id);
-    setHabits(habits.filter((h) => h.id !== id));
-    toast(`Habit "${habit?.name}" deleted`, { icon: "🗑️" });
+  const deleteHabit = async (habitId) => {
+    try {
+      const habit = habits.find((h) => h._id === habitId);
+      await api.delete(`/habits/${habitId}`);
+      setHabits(habits.filter((h) => h._id !== habitId));
+      toast(`Habit "${habit.name}" deleted`, { icon: "🗑️" });
+    } catch {
+      toast.error("Failed to delete habit");
+    }
   };
 
   return (
-    <div className="flex max-w-full mx-auto p-6 gap-6">
-
-      {/* Left: Habit Grid */}
-      <div className="overflow-auto flex-1 p-1">
-        <header className="space-y-2 my-2">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Habit Tracker
-        </h1>
-        <p className="text-gray-500 dark:text-gray-400 text-sm">
-          Track your habits over the last 30 days. Click on a square to log or
-          unlog a habit for that day.
-        </p>
-      </header>
-        <div className="flex gap-3 mb-4 flex-col sm:flex-row">
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="New habit name..."
-            className="flex-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-          />
-          <button
-            onClick={addHabit}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition w-full sm:w-auto"
-          >
-            Add Habit
-          </button>
+    <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+      {/* Header */}
+      <motion.header
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col sm:flex-row sm:items-end justify-between gap-4"
+      >
+        <div>
+          <div className="flex items-start gap-3">
+            <div className="p-3 rounded-xl bg-orange-500 shadow-lg shadow-orange-500/25">
+              <Activity className="w-6 h-6 text-white" />
+            </div>
+            <div>
+            <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">
+              Axio-Habits
+            </h1>
+            <p className="text-sm text-slate-500 font-medium">
+              Consistency over the last 30 days
+            </p></div>
+          </div>
         </div>
 
-        {habits.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400">
-            No habits yet. Start with one.
-          </p>
-        ) : (
-          <table className="table-fixed border-collapse border border-gray-300 text-center min-w-[600px] sm:min-w-full">
-            <thead>
-              <tr className="bg-gray-100 sticky top-0">
-                <th className="border border-gray-300 px-4 py-2 w-48 text-left pl-2 sticky top-0 left-0 bg-gray-100 z-20">
-                  Habit
-                </th>
-                {days.map((day) => (
-                  <th
-                    key={day}
-                    className="border border-gray-300 px-1 py-1 w-8 text-xs sticky top-0 bg-gray-100 z-10"
-                  >
-                    {day.slice(5)}
-                  </th>
-                ))}
-                <th className="border border-gray-300 px-2 py-1 sticky top-0 bg-gray-100 z-10">
-                  Del
-                </th>
-              </tr>
-            </thead>
+        <button
+          onClick={() => setIsFormOpen(!isFormOpen)}
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-orange-500 text-white font-semibold rounded-2xl shadow-lg hover:bg-orange-600 transition"
+        >
+          {isFormOpen ? <ChevronUp /> : <Plus />}
+          {isFormOpen ? "Close" : "New Habit"}
+        </button>
+      </motion.header>
 
-            <tbody>
-              {habits.map((habit) => (
-                <tr key={habit.id}>
-                  <td className="border border-gray-300 px-2 py-1 font-semibold text-left pl-2 sticky left-0 bg-white z-10">
-                    {habit.name}
-                  </td>
-
-                  {days.map((day) => (
-                    <td key={day} className="border border-gray-300">
-                      <button
-                        onClick={() => toggleDay(habit.id, day)}
-                        className={`w-5 h-5 mx-auto rounded ${
-                          habit.logs[day] ? "bg-green-600" : "bg-gray-200"
-                        }`}
-                        title={day}
-                      />
-                    </td>
-                  ))}
-
-                  <td className="border border-gray-300 px-2 py-1">
-                    <button
-                      onClick={() => deleteHabit(habit.id)}
-                      className="px-2 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition"
-                    >
-                      X
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Add Habit */}
+      <AnimatePresence>
+        {isFormOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200 shadow-xl flex flex-col sm:flex-row gap-3">
+              <input
+                autoFocus
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && addHabit()}
+                placeholder="Habit name"
+                className="flex-1 px-5 py-3 rounded-2xl bg-slate-50 focus:ring-2 focus:ring-orange-400 outline-none"
+              />
+              <button
+                onClick={addHabit}
+                className="px-8 py-3 rounded-2xl bg-slate-900 text-white font-semibold hover:bg-orange-600 transition"
+              >
+                Create
+              </button>
+            </div>
+          </motion.div>
         )}
+      </AnimatePresence>
+
+      {/* Heatmap Board */}
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <div className="min-w-[900px] p-4 sm:p-6 lg:p-8">
+            {/* Header row */}
+            <div className="flex border-b pb-4 mb-4 text-xs uppercase tracking-widest text-slate-400 font-bold">
+              <div className="w-52 flex items-center gap-2 shrink-0">
+                <CalendarDays className="w-4 h-4" />
+                Habits
+              </div>
+              <div className="flex gap-2">
+                {days.map((day) => (
+                  <div key={day} className="w-6 text-center">
+                    <div
+                      className={`text-[9px] font-bold ${
+                        day === today ? "text-orange-500" : "text-slate-400"
+                      }`}
+                    >
+                      {new Date(day).toLocaleDateString(undefined, {
+                        weekday: "narrow",
+                      })}
+                    </div>
+                    <div
+                      className={`mt-1 w-5 h-5 mx-auto rounded-md flex items-center justify-center text-[9px] font-black ${
+                        day === today
+                          ? "bg-orange-500 text-white"
+                          : "bg-slate-50 text-slate-400"
+                      }`}
+                    >
+                      {day.slice(-2)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Habit rows */}
+            <div className="space-y-3">
+              {habits.length === 0 && (
+                <p className="text-center text-slate-400 py-10 italic">
+                  No habits yet. Start with one.
+                </p>
+              )}
+
+              <AnimatePresence>
+                {habits.map((habit) => (
+                  <motion.div
+                    key={habit._id}
+                    layout
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center gap-2 group"
+                  >
+                    <div className="w-52 shrink-0 flex items-center gap-3 pr-3">
+                      <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <span className="font-semibold text-sm text-slate-700 truncate">
+                        {habit.name}
+                      </span>
+                    </div>
+
+                    <div className="flex gap-2">
+                      {days.map((day) => (
+                        <button
+                          key={day}
+                          onClick={() => toggleDay(habit._id, day)}
+                          className={`w-6 h-6 rounded-md border transition ${
+                            habit.logs?.[day]
+                              ? "bg-orange-500 border-orange-600"
+                              : "bg-slate-50 border-slate-200 hover:border-slate-400"
+                          } ${day === today ? "ring-2 ring-orange-200" : ""}`}
+                        />
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() => deleteHabit(habit._id)}
+                      className="ml-auto p-2 opacity-0 group-hover:opacity-100 rounded-xl hover:bg-red-50 text-slate-400 hover:text-red-600 transition"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 bg-slate-50 border-t flex flex-wrap gap-4 justify-between items-center text-[10px] uppercase tracking-widest font-bold text-slate-400">
+          <div className="flex gap-4">
+            <span className="flex items-center gap-1">
+              <span className="w-3 h-3 bg-slate-200 rounded" /> Incomplete
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-3 h-3 bg-orange-500 rounded" /> Complete
+            </span>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-orange-600">
+            <Flame className="w-3 h-3" />
+            Streak Active
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

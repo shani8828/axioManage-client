@@ -1,84 +1,245 @@
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-
-const NAV_LINKS = [
-  { name: "Home", path: "/" },
-  { name: "Tasks", path: "/tasks" },
-  { name: "Diary", path: "/diary" },
-  { name: "Habit Tracker", path: "/habit-tracker" },
-  { name: "Expense Tracker", path: "/expense-tracker" },
-  { name: "Contact Book", path: "/contact-book" },
-];
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
+import {
+  Menu,
+  X,
+  LogOut,
+  User,
+  Settings,
+  LayoutDashboard,
+  Bell,
+  ChevronDown,
+  BookText, // Fixed: Added missing icon imports
+  Activity,
+  Wallet,
+  Contact2,
+} from "lucide-react";
 
 export default function Navbar() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  const getNavLinkClass = ({ isActive }) =>
-    `px-4 py-2 rounded-lg transition-all duration-200 font-medium ${
-      isActive
-        ? "bg-blue-600 text-white"
-        : "text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600"
-    }`;
+  const handleLogout = async () => {
+    await logout();
+    setIsOpen(false); // Fixed: Close mobile menu on logout
+    setIsProfileOpen(false);
+    navigate("/login");
+  };
+
+  const navLinks = [
+    { name: "Tasks", path: "/tasks", icon: LayoutDashboard },
+    { name: "Diary", path: "/diary", icon: BookText }, // Fixed: Changed icon for variety
+    { name: "Habit Tracker", path: "/habit-tracker", icon: Activity },
+    { name: "Expense Tracker", path: "/expense-tracker", icon: Wallet },
+    { name: "Contact Book", path: "/contact-book", icon: Contact2 },
+  ];
 
   return (
-    <nav className="block md:hidden sticky top-0 z-50 w-full border-b bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-slate-200 dark:border-slate-800 transition-colors">
-      
-      {/* Container */}
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
-        
-        {/* Logo */}
-        <Link to="/" className="flex justify-center items-center gap-2">
-          <div className="bg-transparent flex items-center justify-center ">
-            <div className="text-2xl font-bold">🔥</div>
+    // Fixed: Added transition-all to the nav container for smoother scroll appearance
+    <nav className="sticky top-3 rounded-3xl md:rounded-full border mx-2 md:mx-6 lg:mx-10 z-50 border-slate-200 bg-white/40 backdrop-blur-md transition-all">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo Section */}
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center gap-1 group">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-transparent transition-transform group-hover:rotate-12">
+                <span className="text-xl font-bold text-white text-[25px]">
+                  🔥
+                </span>
+              </div>
+              <span className="text-xl font-bold tracking-tight text-slate-900">
+                Axio-<span className="text-indigo-600">Manage</span>
+              </span>
+            </Link>
           </div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Axio-Manage
-          </h1>
-        </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-4">
-          {NAV_LINKS.map((link) => (
-            <NavLink key={link.path} to={link.path} className={getNavLinkClass}>
-              {link.name}
-            </NavLink>
-          ))}
-        </div>
-
-        {/* Mobile Hamburger */}
-        <div className="md:hidden">
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-2.5 rounded-lg text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800"
-          >
-            <div className="w-6 h-5 flex flex-col justify-between relative">
-              <span className={`h-0.5 w-full bg-current transform transition-all ${isOpen ? "rotate-45 translate-y-2" : ""}`} />
-              <span className={`h-0.5 w-full bg-current transition-all ${isOpen ? "opacity-0" : ""}`} />
-              <span className={`h-0.5 w-full bg-current transform transition-all ${isOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+          {/* Desktop Navigation */}
+          <div className="hidden md:block">
+            <div className="ml-10 flex items-baseline space-x-1">
+              {navLinks.map((link) => (
+                <NavLink
+                  key={link.name}
+                  to={link.path}
+                  className={({ isActive }) =>
+                    `px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                      isActive
+                        ? "text-indigo-600 bg-indigo-50"
+                        : "text-slate-600 hover:text-indigo-600 hover:bg-slate-50"
+                    }`
+                  }
+                >
+                  {link.name}
+                </NavLink>
+              ))}
             </div>
-          </button>
+          </div>
+
+          {/* Right Side Actions */}
+          <div className="hidden md:flex items-center gap-4">
+            {user ? (
+              <div className="flex items-center gap-4">
+                <button className="text-slate-400 hover:text-slate-600 transition-colors">
+                  <Bell className="w-5 h-5" />
+                </button>
+
+                {/* Profile Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="flex items-center gap-2 rounded-full border border-slate-200 p-1 pr-3 hover:bg-white transition-all shadow-sm"
+                  >
+                    {user?.avatar ? (
+                      <img
+                        src={user.avatar}
+                        referrerPolicy="no-referrer"
+                        className="h-8 w-8 rounded-full object-cover border border-indigo-100"
+                        alt="Profile"
+                      />
+                    ) : (
+                      <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+                        {user?.name?.[0]?.toUpperCase() || "U"}
+                      </div>
+                    )}{" "}
+                    <ChevronDown
+                      className={`w-4 h-4 text-slate-500 transition-transform duration-300 ${isProfileOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {isProfileOpen && (
+                      <>
+                        {/* Overlay to close dropdown */}
+                        <div
+                          className="fixed inset-0 z-10"
+                          onClick={() => setIsProfileOpen(false)}
+                        />
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          className="absolute right-0 z-20 mt-3 w-56 origin-top-right rounded-2xl bg-white p-2 shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+                        >
+                          <div className="px-4 py-3 border-b border-slate-50 mb-1">
+                            <p className="text-sm font-bold text-slate-900 truncate">
+                              {user?.name || "Account"}
+                            </p>
+                            <p className="text-xs text-slate-500 truncate">
+                              {user?.email}
+                            </p>
+                          </div>
+                          {/* <Link
+                            to="/profile"
+                            onClick={() => setIsProfileOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors"
+                          >
+                            <User className="w-4 h-4" /> Profile
+                          </Link>
+                          <Link
+                            to="/settings"
+                            onClick={() => setIsProfileOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors"
+                          >
+                            <Settings className="w-4 h-4" /> Settings
+                          </Link> */}
+                          <button
+                            onClick={handleLogout}
+                            className="flex w-full items-center gap-3 px-3 py-2 mt-1 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          >
+                            <LogOut className="w-4 h-4" /> Sign out
+                          </button>
+                        </motion.div>
+                      </>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                {/* <Link
+                  to="/login"
+                  className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors"
+                >
+                  Sign Up
+                </Link> */}
+                <Link
+                  to="/login"
+                  className="bg-indigo-600 text-white text-sm px-5 py-2 rounded-full font-bold hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100"
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="flex md:hidden">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="inline-flex items-center justify-center rounded-xl p-2 text-slate-600 hover:bg-white focus:outline-none transition-colors"
+            >
+              {isOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Mobile Dropdown Menu */}
-      <div
-        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-slate-900 ${
-          isOpen ? "max-h-96 border-t border-slate-100 dark:border-slate-800" : "max-h-0"
-        }`}
-      >
-        <div className="flex flex-col gap-2 p-4">
-          {NAV_LINKS.map((link) => (
-            <NavLink
-              key={link.path}
-              to={link.path}
-              className={getNavLinkClass}
-              onClick={() => setIsOpen(false)}
-            >
-              {link.name}
-            </NavLink>
-          ))}
-        </div>
-      </div>
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="md:hidden border-t border-slate-100 bg-transparent rounded-b-3xl overflow-hidden"
+          >
+            <div className="space-y-1 px-4 pb-6 pt-4">
+              {navLinks.map((link) => (
+                <NavLink
+                  key={link.name}
+                  to={link.path}
+                  onClick={() => setIsOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${
+                      isActive
+                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100"
+                        : "text-slate-600 hover:bg-slate-50"
+                    }`
+                  }
+                >
+                  <link.icon className="w-5 h-5" />
+                  {link.name}
+                </NavLink>
+              ))}
+              <div className="pt-4 mt-4 border-t border-slate-100">
+                {user ? (
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <LogOut className="w-5 h-5" /> Sign out
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center w-full px-4 py-3 rounded-xl bg-indigo-600 text-white font-bold"
+                  >
+                    Sign in
+                  </Link>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
