@@ -111,9 +111,9 @@ export default function Home() {
               >
                 Get Started
               </Link>
-              <button className="rounded-2xl border border-slate-200 bg-white px-8 py-4 font-bold text-slate-600 hover:bg-slate-50 transition">
+              {/* <button className="rounded-2xl border border-slate-200 bg-white px-8 py-4 font-bold text-slate-600 hover:bg-slate-50 transition">
                 Explore Features
-              </button>
+              </button> */}
             </>
           )}
         </div>

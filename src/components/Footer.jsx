@@ -13,7 +13,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-4 md:col-span-2">
             <h3 className="text-2xl font-extrabold tracking-tight text-white">
-              Axio<span className="text-indigo-400">-Manage</span>
+              Axio-<span className="text-indigo-400">Manage</span>
             </h3>
             <p className="max-w-md text-sm leading-relaxed text-indigo-300">
               Axio-Manage helps you organize tasks, habits, expenses, diaries,
@@ -58,11 +58,11 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link to="/profile" className="hover:text-white transition">
-                  Your Profile
+                <Link to="/contact-book" className="hover:text-white transition">
+                  Contacts Book
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="/privacy" className="hover:text-white transition">
                   Privacy Policy
                 </Link>
@@ -71,7 +71,7 @@ export default function Footer() {
                 <Link to="/terms" className="hover:text-white transition">
                   Terms of Use
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>
@@ -87,7 +87,7 @@ export default function Footer() {
 
           <div className="flex items-center gap-5">
             <a
-              href="mailto:support@axiomanage.com"
+              href="mailto:shani.maurya.iitkgp@gmail.com"
               className="group flex items-center gap-2 text-sm text-indigo-300 hover:text-white transition"
             >
               <Mail className="h-4 w-4" />
@@ -96,7 +96,8 @@ export default function Footer() {
             </a>
 
             <a
-              href="#"
+              href="https://github.com/shani8828"
+              target="_blank"
               className="text-indigo-300 hover:text-white transition"
               aria-label="GitHub"
             >
@@ -104,7 +105,8 @@ export default function Footer() {
             </a>
 
             <a
-              href="#"
+              href="https://www.linkedin.com/in/shani8828/"
+              target="_blank"
               className="text-indigo-300 hover:text-white transition"
               aria-label="LinkedIn"
             >
