@@ -11,50 +11,55 @@ export default function Task({ listId, tasks, setTasks }) {
 
   const addTask = async () => {
     if (!input.trim()) return toast.error("Task cannot be empty");
+    const toastId = toast.loading("Saving task...");
     try {
       const newTask = await api.post(`/lists/${listId}/tasks`, {
         text: input.trim(),
       });
       setTasks([...(tasks || []), newTask]);
       setInput("");
-      toast.success("Task added");
+      toast.success("Task added", { id: toastId });
     } catch {
-      toast.error("Failed to add task");
+      toast.error("Failed to add task", { id: toastId });
     }
   };
 
   const toggleDone = async (taskId, completed) => {
+    const toastId = toast.loading("Updating status...");
     try {
       const updatedTask = await api.patch(`/lists/${listId}/tasks/${taskId}`, {
         completed: !completed,
       });
       setTasks(tasks.map((t) => (t._id === taskId ? updatedTask : t)));
+      toast.success("Status updated", { id: toastId });
     } catch {
-      toast.error("Failed to update status");
+      toast.error("Failed to update status", { id: toastId });
     }
   };
 
   const updateTask = async () => {
     if (!editingText.trim()) return toast.error("Task cannot be empty");
+    const toastId = toast.loading("Updating task...");
     try {
       const updatedTask = await api.patch(`/lists/${listId}/tasks/${editingId}`, {
         text: editingText,
       });
       setTasks(tasks.map((t) => (t._id === editingId ? updatedTask : t)));
       setEditingId(null);
-      toast.success("Task updated");
+      toast.success("Task updated", { id: toastId });
     } catch {
-      toast.error("Failed to update task");
+      toast.error("Failed to update task", { id: toastId });
     }
   };
 
   const deleteTask = async (taskId) => {
+    const toastId = toast.loading("Deleting task...");
     try {
       await api.delete(`/lists/${listId}/tasks/${taskId}`);
       setTasks(tasks.filter((t) => t._id !== taskId));
-      toast.success("Task deleted");
+      toast.success("Task deleted", { id: toastId });
     } catch {
-      toast.error("Failed to delete task");
+      toast.error("Failed to delete task", { id: toastId });
     }
   };
 
@@ -84,13 +89,15 @@ export default function Task({ listId, tasks, setTasks }) {
       {/* Task List */}
       <ul className="space-y-3">
         <AnimatePresence mode="popLayout">
-          {(!tasks || tasks.length === 0) ? (
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+          {!tasks || tasks.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               className="text-center py-6"
             >
-              <p className="text-sm text-gray-400 italic">No tasks yet. Stay productive!</p>
+              <p className="text-sm text-gray-400 italic">
+                No tasks yet. Stay productive!
+              </p>
             </motion.div>
           ) : (
             tasks.map((task) => (
@@ -101,21 +108,23 @@ export default function Task({ listId, tasks, setTasks }) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 10 }}
                 className={`group flex items-center gap-3 p-3 rounded-2xl border transition-all ${
-                  task.completed 
-                    ? "bg-gray-50/50 border-gray-100" 
+                  task.completed
+                    ? "bg-gray-50/50 border-gray-100"
                     : "bg-white border-gray-100 shadow-sm hover:shadow-md"
                 }`}
               >
-                {/* Custom Checkbox */}
+                {/* Checkbox */}
                 <button
                   onClick={() => toggleDone(task._id, task.completed)}
-                  className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                    task.completed 
-                    ? "bg-green-500 border-green-500" 
-                    : "border-gray-300 hover:border-indigo-500"
+                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                    task.completed
+                      ? "bg-green-500 border-green-500"
+                      : "border-gray-300 hover:border-indigo-500"
                   }`}
                 >
-                  {task.completed && <Check className="w-4 h-4 text-white" />}
+                  {task.completed && (
+                    <Check className="w-4 h-4 text-white" />
+                  )}
                 </button>
 
                 {/* Task Content */}
@@ -128,18 +137,28 @@ export default function Task({ listId, tasks, setTasks }) {
                         onChange={(e) => setEditingText(e.target.value)}
                         className="flex-1 bg-white border border-indigo-300 rounded-lg px-2 py-1 text-sm outline-none ring-2 ring-indigo-500/10"
                       />
-                      <button onClick={updateTask} className="p-1 text-green-600 hover:bg-green-50 rounded-md">
+                      <button
+                        onClick={updateTask}
+                        className="p-1 text-green-600 hover:bg-green-50 rounded-md"
+                      >
                         <Check className="w-4 h-4" />
                       </button>
-                      <button onClick={() => setEditingId(null)} className="p-1 text-gray-400 hover:bg-gray-50 rounded-md">
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="p-1 text-gray-400 hover:bg-gray-50 rounded-md"
+                      >
                         <X className="w-4 h-4" />
                       </button>
                     </div>
                   ) : (
                     <div className="flex flex-col">
-                      <span className={`text-sm font-medium transition-all truncate ${
-                        task.completed ? "text-gray-400 line-through" : "text-gray-700"
-                      }`}>
+                      <span
+                        className={`text-sm font-medium truncate ${
+                          task.completed
+                            ? "text-gray-400 line-through"
+                            : "text-gray-700"
+                        }`}
+                      >
                         {task.text}
                       </span>
                       <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-0.5">
@@ -150,18 +169,21 @@ export default function Task({ listId, tasks, setTasks }) {
                   )}
                 </div>
 
-                {/* Action Buttons */}
+                {/* Actions */}
                 {!editingId && (
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
-                      onClick={() => { setEditingId(task._id); setEditingText(task.text); }}
-                      className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                      onClick={() => {
+                        setEditingId(task._id);
+                        setEditingText(task.text);
+                      }}
+                      className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg"
                     >
                       <Edit3 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => deleteTask(task._id)}
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
