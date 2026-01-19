@@ -17,55 +17,44 @@ export default function Login() {
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
+
+    const t = toast.loading("Signing you in...");
     setIsLoading(true);
+
     try {
       const { token, user } = await api.post("/auth/login", {
         email,
         password,
       });
+
       login(token, user);
-      toast.success("Welcome back!");
+      toast.success("Welcome back!", { id: t });
       navigate("/");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Login failed");
+      toast.error(err?.response?.data?.message || "Login failed", { id: t });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGoogle = async (res) => {
+    const t = toast.loading("Connecting your Google account...");
+
     try {
       const { token, user } = await api.post("/auth/google", {
         tokenId: res.credential,
       });
+
       login(token, user);
-      toast.success("Logged in with Google!");
+      toast.success("Logged in with Google!", { id: t });
       navigate("/");
     } catch (err) {
-      toast.error("Google authentication failed Client-side.");
+      toast.error(
+        err?.response?.data?.message || "Google authentication failed",
+        { id: t },
+      );
     }
   };
-<GoogleLogin
-  onSuccess={async (res) => {
-    try {
-      console.log("Google credential:", res.credential);
-      const { token, user } = await api.post("/auth/google", { token: res.credential });
-      login(token, user);
-      toast.success("Logged in with Google!");
-      navigate("/");
-    } catch (err) {
-      console.error("Google login API error:", err);
-      toast.error(err?.response?.data?.message || "Google authentication failed");
-    }
-  }}
-  onError={(err) => {
-    console.error("Google login error:", err);
-    toast.error("Google login failed client-side");
-  }}
-  theme="outline"
-  shape="pill"
-  width="100%"
-/>
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

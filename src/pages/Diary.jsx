@@ -22,12 +22,14 @@ export default function Diary() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const fetchEntries = async () => {
+    const toastId = toast.loading("Loading diary...");
     try {
       setLoading(true);
       const data = await api.get("/diary");
       setEntries(data);
+      toast.success("Diary loaded", { id: toastId });
     } catch (err) {
-      toast.error(err || "Failed to load diary entries");
+      toast.error(err || "Failed to load diary entries", { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -43,20 +45,24 @@ export default function Diary() {
       return;
     }
 
+    const toastId = toast.loading(
+      editingId ? "Updating entry..." : "Saving entry..."
+    );
+
     try {
       if (editingId) {
         await api.put(`/diary/${editingId}`, { content: text });
-        toast.success("Entry updated");
+        toast.success("Entry updated", { id: toastId });
         setEditingId(null);
       } else {
         await api.post("/diary", { content: text });
-        toast.success("Entry saved");
+        toast.success("Entry saved", { id: toastId });
       }
       setText("");
       setIsExpanded(false);
       fetchEntries();
     } catch (err) {
-      toast.error(err || "Something went wrong");
+      toast.error(err || "Something went wrong", { id: toastId });
     }
   };
 
@@ -69,12 +75,13 @@ export default function Diary() {
   };
 
   const handleDelete = async (id) => {
+    const toastId = toast.loading("Deleting entry...");
     try {
       await api.delete(`/diary/${id}`);
-      toast.success("Entry deleted");
+      toast.success("Entry deleted", { id: toastId });
       fetchEntries();
     } catch (err) {
-      toast.error(err || "Failed to delete entry");
+      toast.error(err || "Failed to delete entry", { id: toastId });
     }
   };
 

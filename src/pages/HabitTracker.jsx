@@ -31,10 +31,13 @@ export default function FullHabitDashboard() {
   const today = new Date().toISOString().slice(0, 10);
 
   const fetchHabits = async () => {
+    const t = toast.loading("Loading habits...");
     try {
       const data = await api.get("/habits");
       setHabits(data);
+      toast.dismiss(t);
     } catch {
+      toast.dismiss(t);
       toast.error("Failed to fetch habits");
     }
   };
@@ -48,18 +51,21 @@ export default function FullHabitDashboard() {
       toast.error("Habit name cannot be empty");
       return;
     }
+
+    const t = toast.loading("Saving habit...");
     try {
       const newHabit = await api.post("/habits", { name: name.trim() });
       setHabits([newHabit, ...habits]);
-      toast.success(`Habit "${name}" added`);
+      toast.success(`Habit "${name}" added`, { id: t });
       setName("");
       setIsFormOpen(false);
     } catch {
-      toast.error("Failed to add habit");
+      toast.error("Failed to add habit", { id: t });
     }
   };
 
   const toggleDay = async (habitId, day) => {
+    const t = toast.loading("Updating...");
     try {
       setHabits((prev) =>
         prev.map((h) =>
@@ -72,21 +78,28 @@ export default function FullHabitDashboard() {
       await api.patch(`/habits/${habitId}/toggle`, { day });
 
       const habit = habits.find((h) => h._id === habitId);
-      toast(`${habit?.name}`, { icon: "✅", duration: 800 });
+      toast.success(habit?.name || "Updated", {
+        id: t,
+        duration: 800,
+      });
     } catch {
-      toast.error("Failed to toggle habit");
+      toast.error("Failed to update", { id: t });
       fetchHabits();
     }
   };
 
   const deleteHabit = async (habitId) => {
+    const habit = habits.find((h) => h._id === habitId);
+    const t = toast.loading("Deleting habit...");
     try {
-      const habit = habits.find((h) => h._id === habitId);
       await api.delete(`/habits/${habitId}`);
       setHabits(habits.filter((h) => h._id !== habitId));
-      toast(`Habit "${habit.name}" deleted`, { icon: "🗑️" });
+      toast(`Habit "${habit.name}" deleted`, {
+        icon: "🗑️",
+        id: t,
+      });
     } catch {
-      toast.error("Failed to delete habit");
+      toast.error("Failed to delete habit", { id: t });
     }
   };
 
@@ -104,12 +117,13 @@ export default function FullHabitDashboard() {
               <Activity className="w-6 h-6 text-white" />
             </div>
             <div>
-            <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">
-              Axio-Habits
-            </h1>
-            <p className="text-sm text-slate-500 font-medium">
-              Consistency over the last 30 days
-            </p></div>
+              <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">
+                Axio-Habits
+              </h1>
+              <p className="text-sm text-slate-500 font-medium">
+                Consistency over the last 30 days
+              </p>
+            </div>
           </div>
         </div>
 

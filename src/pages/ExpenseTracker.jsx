@@ -25,11 +25,13 @@ export default function ExpenseTracker() {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const fetchExpenses = async () => {
+    const toastId = toast.loading("Loading expenses...");
     try {
       const data = await api.get("/expenses");
       setExpenses(data);
+      toast.success("Expenses loaded", { id: toastId });
     } catch {
-      toast.error("Failed to load expenses");
+      toast.error("Failed to load expenses", { id: toastId });
     }
   };
 
@@ -52,6 +54,10 @@ export default function ExpenseTracker() {
       return;
     }
 
+    const toastId = toast.loading(
+      editingId ? "Updating expense..." : "Saving expense..."
+    );
+
     const payload = {
       title,
       amount: Number(amount),
@@ -62,15 +68,15 @@ export default function ExpenseTracker() {
     try {
       if (editingId) {
         await api.put(`/expenses/${editingId}`, payload);
-        toast.success("Expense updated");
+        toast.success("Expense updated", { id: toastId });
       } else {
         await api.post("/expenses", payload);
-        toast.success("Expense added");
+        toast.success("Expense added", { id: toastId });
       }
       resetForm();
       fetchExpenses();
     } catch {
-      toast.error("Something went wrong");
+      toast.error("Something went wrong", { id: toastId });
     }
   };
 
@@ -85,12 +91,13 @@ export default function ExpenseTracker() {
   };
 
   const deleteExpense = async (id) => {
+    const toastId = toast.loading("Deleting expense...");
     try {
       await api.delete(`/expenses/${id}`);
-      toast.success("Expense deleted");
+      toast.success("Expense deleted", { id: toastId });
       fetchExpenses();
     } catch {
-      toast.error("Failed to delete");
+      toast.error("Failed to delete", { id: toastId });
     }
   };
 
@@ -232,7 +239,6 @@ export default function ExpenseTracker() {
           <div className="space-y-5">
             {Object.entries(categoryTotals).map(([cat, amt]) => (
               <div key={cat} className="space-y-2">
-                {/* Labels */}
                 <div className="flex items-start justify-between gap-3 text-sm font-semibold">
                   <span className="text-slate-600 truncate max-w-[65%]">
                     {cat}
@@ -242,7 +248,6 @@ export default function ExpenseTracker() {
                   </span>
                 </div>
 
-                {/* Progress bar */}
                 <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
@@ -259,6 +264,7 @@ export default function ExpenseTracker() {
             ))}
           </div>
         </section>
+
         {/* List */}
         <section className="lg:col-span-2 space-y-4">
           <div className="flex items-center gap-2 px-2">

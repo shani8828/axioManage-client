@@ -12,11 +12,13 @@ export default function Tasks() {
   const [editName, setEditName] = useState("");
 
   const fetchLists = async () => {
+    const t = toast.loading("Loading your lists...");
     try {
       const data = await api.get("/lists");
       setLists(data);
+      toast.dismiss(t);
     } catch {
-      toast.error("Failed to fetch task lists");
+      toast.error("Failed to fetch task lists", { id: t });
     }
   };
 
@@ -29,23 +31,26 @@ export default function Tasks() {
       toast.error("List name cannot be empty");
       return;
     }
+
+    const t = toast.loading("Creating list...");
     try {
       const newList = await api.post("/lists", { name: newListName.trim() });
       setLists([newList, ...lists]);
       setNewListName("");
-      toast.success("New list created");
+      toast.success("New list created", { id: t });
     } catch {
-      toast.error("Failed to create list");
+      toast.error("Failed to create list", { id: t });
     }
   };
 
   const deleteList = async (id) => {
+    const t = toast.loading("Deleting list...");
     try {
       await api.delete(`/lists/${id}`);
       setLists(lists.filter((l) => l._id !== id));
-      toast.success("List deleted");
+      toast.success("List deleted", { id: t });
     } catch {
-      toast.error("Failed to delete list");
+      toast.error("Failed to delete list", { id: t });
     }
   };
 
@@ -54,13 +59,15 @@ export default function Tasks() {
       setEditingId(null);
       return;
     }
+
+    const t = toast.loading("Saving changes...");
     try {
       const updated = await api.patch(`/lists/${id}`, { name: editName });
       setLists(lists.map((l) => (l._id === id ? updated : l)));
       setEditingId(null);
-      toast.success("List renamed");
+      toast.success("List renamed", { id: t });
     } catch {
-      toast.error("Rename failed");
+      toast.error("Rename failed", { id: t });
     }
   };
 
