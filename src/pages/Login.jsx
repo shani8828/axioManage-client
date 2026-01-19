@@ -45,6 +45,27 @@ export default function Login() {
       toast.error("Google authentication failed Client-side.");
     }
   };
+<GoogleLogin
+  onSuccess={async (res) => {
+    try {
+      console.log("Google credential:", res.credential);
+      const { token, user } = await api.post("/auth/google", { token: res.credential });
+      login(token, user);
+      toast.success("Logged in with Google!");
+      navigate("/");
+    } catch (err) {
+      console.error("Google login API error:", err);
+      toast.error(err?.response?.data?.message || "Google authentication failed");
+    }
+  }}
+  onError={(err) => {
+    console.error("Google login error:", err);
+    toast.error("Google login failed client-side");
+  }}
+  theme="outline"
+  shape="pill"
+  width="100%"
+/>
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -66,14 +87,14 @@ export default function Login() {
             Welcome back
           </h2>
           <p className="mt-2 text-sm text-gray-500">
-            Enter your credentials to access your account
+            Choose your Google account to access your space
           </p>
         </div>
 
         <form className="mt-8 space-y-5" onSubmit={handleEmailLogin}>
           <div className="space-y-4">
             {/* Email Input */}
-            <div className="relative group">
+            {/* <div className="relative group">
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 ml-1">
                 Email Address
               </label>
@@ -91,10 +112,10 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* Password Input */}
-            <div className="relative group">
+            {/* <div className="relative group">
               <div className="flex justify-between items-center mb-1 ml-1">
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Password
@@ -131,10 +152,10 @@ export default function Login() {
                   )}
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
 
-          <motion.button
+          {/* <motion.button
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
@@ -143,7 +164,7 @@ export default function Login() {
             className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
           >
             {isLoading ? "Signing in..." : "Sign in"}
-          </motion.button>
+          </motion.button> */}
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -151,7 +172,7 @@ export default function Login() {
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="px-4 bg-white text-gray-400 font-medium">
-                Or continue with
+                Continue with
               </span>
             </div>
           </div>
@@ -167,12 +188,12 @@ export default function Login() {
           </div>
         </form>
 
-        <p className="text-center text-sm text-gray-500">
+        {/* <p className="text-center text-sm text-gray-500">
           Don't have an account?{" "}
           <button className="font-semibold text-indigo-600 hover:text-indigo-500">
             Create account
           </button>
-        </p>
+        </p> */}
       </motion.div>
     </div>
   );
