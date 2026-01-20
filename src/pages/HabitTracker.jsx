@@ -104,7 +104,7 @@ export default function FullHabitDashboard() {
   };
 
   return (
-    <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-10">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -12 }}
@@ -166,16 +166,16 @@ export default function FullHabitDashboard() {
       </AnimatePresence>
 
       {/* Heatmap Board */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <div className="min-w-[900px] p-4 sm:p-6 lg:p-8">
+      <div className="bg-white w-full rounded-3xl border border-slate-200 shadow-2xl overflow-hidden">
+        <div className="overflow-x-auto w-full">
+          <div className="min-w-[900px] px-2 py-4 sm:px-4 lg:px-6 sm:py-6 lg:py-8">
             {/* Header row */}
             <div className="flex border-b pb-4 mb-4 text-xs uppercase tracking-widest text-slate-400 font-bold">
-              <div className="w-52 flex items-center gap-2 shrink-0">
+              <div className="w-40 md:w-52 flex items-center gap-2 shrink-0 sticky left-0 z-30 bg-white border-r border-slate-200 shadow-sm">
                 <CalendarDays className="w-4 h-4" />
                 Habits
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 pl-2">
                 {days.map((day) => (
                   <div key={day} className="w-6 text-center">
                     <div
@@ -202,7 +202,7 @@ export default function FullHabitDashboard() {
             </div>
 
             {/* Habit rows */}
-            <div className="space-y-3">
+            <div className="space-y-3 bg-white">
               {habits.length === 0 && (
                 <p className="text-center text-slate-400 py-10 italic">
                   No habits yet. Start with one.
@@ -217,13 +217,13 @@ export default function FullHabitDashboard() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0 }}
-                    className="flex items-center gap-2 group"
+                    className="flex items-center gap-2 group min-w-full bg-white"
                   >
-                    <div className="w-52 shrink-0 flex items-center gap-3 pr-3">
-                      <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition">
-                        <CheckCircle2 className="w-4 h-4" />
+                    <div className="w-40 md:w-52 shrink-0 flex items-center gap-3 pr-2 sticky left-0 z-20 bg-white border-r border-slate-200 shadow-sm">
+                      <div className="w-3 h-3 rounded-lg bg-orange-300 flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition">
+                        {/* <CheckCircle2 className="w-4 h-4" /> */}
                       </div>
-                      <span className="font-semibold text-sm text-slate-700 truncate">
+                      <span className="font-semibold text-sm text-slate-700 truncate bg-white">
                         {habit.name}
                       </span>
                     </div>

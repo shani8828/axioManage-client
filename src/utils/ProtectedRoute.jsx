@@ -50,7 +50,7 @@ export default function ProtectedRoute() {
           className="mt-8 flex flex-col items-center"
         >
           <h2 className="text-xl font-bold text-slate-900 tracking-tight italic">
-            Axio<span className="text-indigo-600">Manage</span>
+            Axio-<span className="text-indigo-600">Manage</span>
           </h2>
           <div className="flex gap-1 mt-2">
             {[0, 1, 2].map((i) => (
