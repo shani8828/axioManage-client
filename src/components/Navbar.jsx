@@ -36,6 +36,7 @@ export default function Navbar() {
     { name: "Habit Tracker", path: "/habit-tracker", icon: Activity },
     { name: "Expense Tracker", path: "/expense-tracker", icon: Wallet },
     { name: "Contact Book", path: "/contact-book", icon: Contact2 },
+    { name: "Cache System", path: "/cache", icon: Contact2 },
   ];
 
   return (

@@ -13,6 +13,7 @@ import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import Footer from "./components/Footer";
+import CacheSystem from "./pages/CacheSystem";
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
               <Route path="/contact-book" element={<ContactBook />} />
               <Route path="/habit-tracker" element={<HabitTracker />} />
             </Route>
+            <Route path="/cache" element={<CacheSystem />} />
             <Route path="*" element={<NoPage />} />
           </Routes>
         </main>

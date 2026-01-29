@@ -9,7 +9,6 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-16">
         {/* Top Section */}
         <div className="grid gap-12 md:grid-cols-4">
-          
           {/* Brand */}
           <div className="space-y-4 md:col-span-2">
             <h3 className="text-2xl font-extrabold tracking-tight text-white">
@@ -34,7 +33,10 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/habit-tracker" className="hover:text-white transition">
+                <Link
+                  to="/habit-tracker"
+                  className="hover:text-white transition"
+                >
                   Habit Tracker
                 </Link>
               </li>
@@ -58,8 +60,16 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link to="/contact-book" className="hover:text-white transition">
+                <Link
+                  to="/contact-book"
+                  className="hover:text-white transition"
+                >
                   Contacts Book
+                </Link>
+              </li>
+              <li>
+                <Link to="/cache" className="hover:text-white transition">
+                  Cache System
                 </Link>
               </li>
               {/* <li>
