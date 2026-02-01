@@ -15,6 +15,7 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 import Footer from "./components/Footer";
 import CacheSystem from "./pages/CacheSystem";
 import Notes from "./pages/Notes";
+import Attendance from "./pages/Attendance";
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
               <Route path="/expense-tracker" element={<ExpenseTracker />} />
               <Route path="/contact-book" element={<ContactBook />} />
               <Route path="/habit-tracker" element={<HabitTracker />} />
+              <Route path="/attendance" element={<Attendance />} />
             </Route>
             <Route path="/cache" element={<CacheSystem />} />
             <Route path="/notes" element={<Notes />} />
