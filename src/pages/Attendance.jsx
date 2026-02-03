@@ -279,7 +279,7 @@ const Attendance = () => {
                           }`}
                           title={currentStatus || "Absent"}
                         >
-                          {currentStatus === "Present" ? "P" : "A"}
+                          {currentStatus === "Present" ? "✓" : "✗"}
                         </span>
                       ) : isToday ? (
                         <select
@@ -293,9 +293,9 @@ const Attendance = () => {
                             )
                           }
                         >
-                          <option value="">--</option>
-                          <option value="Present">P</option>
-                          <option value="Absent">A</option>
+                          <option value="">☐</option>
+                          <option value="Present" className="text-green-500">✓</option>
+                          <option value="Absent" className="text-red-500">✗</option>
                         </select>
                       ) : (
                         <span className="text-gray-400">--</span>
@@ -307,22 +307,18 @@ const Attendance = () => {
                   {calcStudentPresencePercent(student._id)}%
                 </td>
                 <td className="border border-gray-300 dark:border-gray-600 px-2 py-1 sticky left-[200px] bg-white dark:bg-gray-900 z-10">
-                  <div className="flex gap-2 text-xs">
+                  <div className="flex gap-2 text-xs items-center justify-evenly">
                     <button
                       onClick={() => {
                         setEditStudent(student);
                         setEditName(student.name);
                       }}
-                      className="text-blue-600 hover:underline"
-                    >
-                      Edit
-                    </button>
+                      className="text-blue-600 hover:underline  hover:scale-105 transition-all duration-300"
+                    >✎</button>
                     <button
                       onClick={() => handleDeleteStudent(student._id)}
-                      className="text-red-600 hover:underline"
-                    >
-                      Delete
-                    </button>
+                      className="text-red-600 hover:underline hover:scale-105 transition-all duration-300 font-bold"
+                    >🗑⃨̅̅̅</button>
                   </div>
                 </td>
               </tr>

@@ -14,7 +14,6 @@ import Login from "./pages/Login";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import Footer from "./components/Footer";
 import CacheSystem from "./pages/CacheSystem";
-import Notes from "./pages/Notes";
 import Attendance from "./pages/Attendance";
 
 export default function App() {
@@ -38,7 +37,6 @@ export default function App() {
               <Route path="/attendance" element={<Attendance />} />
             </Route>
             <Route path="/cache" element={<CacheSystem />} />
-            <Route path="/notes" element={<Notes />} />
             <Route path="*" element={<NoPage />} />
           </Routes>
         </main>
