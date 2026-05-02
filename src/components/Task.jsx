@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import api from "../utils/api";
-import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, Edit3, Check, X, Plus, Calendar } from "lucide-react";
 
 export default function Task({ listId, tasks, setTasks }) {
@@ -66,133 +65,121 @@ export default function Task({ listId, tasks, setTasks }) {
   return (
     <div className="space-y-6 w-full">
       {/* Input Field */}
-      <div className="flex items-center gap-2 group">
+      <div className="flex items-center gap-2 group border-b-2 border-[#666666]/30 focus-within:border-[#111111] transition-colors pb-2">
         <div className="relative flex-1">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addTask()}
-            placeholder="What needs to be done?"
-            className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300"
+            placeholder="WHAT NEEDS TO BE DONE?"
+            className="w-full bg-transparent px-2 py-2 text-sm font-bold text-[#111111] placeholder-[#666666]/50 focus:outline-none uppercase tracking-widest"
           />
         </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <button
           onClick={addTask}
-          className="p-3 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-colors"
+          className="p-2 text-[#111111] hover:text-[#a8defa] transition-colors border border-transparent hover:border-[#111111]"
         >
-          <Plus className="w-5 h-5" />
-        </motion.button>
+          <Plus className="w-5 h-5 stroke-[1.5px]" />
+        </button>
       </div>
 
       {/* Task List */}
       <ul className="space-y-3">
-        <AnimatePresence mode="popLayout">
-          {!tasks || tasks.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-6"
+        {!tasks || tasks.length === 0 ? (
+          <div className="text-center py-6">
+            <p className="text-sm font-bold uppercase tracking-widest text-[#666666]">
+              No tasks yet. Stay productive!
+            </p>
+          </div>
+        ) : (
+          tasks.map((task) => (
+            <li
+              key={task._id}
+              className={`group flex items-start gap-4 p-3 transition-colors border ${
+                task.completed
+                  ? "bg-[#666666]/5 border-[#666666]/10"
+                  : "bg-white border-[#666666]/20 hover:border-[#111111]"
+              }`}
             >
-              <p className="text-sm text-gray-400 italic">
-                No tasks yet. Stay productive!
-              </p>
-            </motion.div>
-          ) : (
-            tasks.map((task) => (
-              <motion.li
-                key={task._id}
-                layout
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                className={`group flex items-center gap-3 p-3 rounded-2xl border transition-all ${
+              {/* Checkbox */}
+              <button
+                onClick={() => toggleDone(task._id, task.completed)}
+                className={`mt-1 w-5 h-5 flex shrink-0 items-center justify-center transition-colors border ${
                   task.completed
-                    ? "bg-gray-50/50 border-gray-100"
-                    : "bg-white border-gray-100 shadow-sm hover:shadow-md"
+                    ? "bg-[#111111] border-[#111111]"
+                    : "border-[#666666] hover:border-[#111111]"
                 }`}
               >
-                {/* Checkbox */}
-                <button
-                  onClick={() => toggleDone(task._id, task.completed)}
-                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                    task.completed
-                      ? "bg-green-500 border-green-500"
-                      : "border-gray-300 hover:border-indigo-500"
-                  }`}
-                >
-                  {task.completed && (
-                    <Check className="w-4 h-4 text-white" />
-                  )}
-                </button>
+                {task.completed && (
+                  <Check className="w-3 h-3 text-white stroke-[2px]" />
+                )}
+              </button>
 
-                {/* Task Content */}
-                <div className="flex-1 min-w-0">
-                  {editingId === task._id ? (
-                    <div className="flex items-center gap-2">
-                      <input
-                        autoFocus
-                        value={editingText}
-                        onChange={(e) => setEditingText(e.target.value)}
-                        className="flex-1 bg-white border border-indigo-300 rounded-lg px-2 py-1 text-sm outline-none ring-2 ring-indigo-500/10"
-                      />
-                      <button
-                        onClick={updateTask}
-                        className="p-1 text-green-600 hover:bg-green-50 rounded-md"
-                      >
-                        <Check className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setEditingId(null)}
-                        className="p-1 text-gray-400 hover:bg-gray-50 rounded-md"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col">
-                      <span
-                        className={`text-sm font-medium truncate ${
-                          task.completed
-                            ? "text-gray-400 line-through"
-                            : "text-gray-700"
-                        }`}
-                      >
-                        {task.text}
-                      </span>
-                      <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-0.5">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(task.createdAt).toLocaleDateString()}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Actions */}
-                {!editingId && (
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              {/* Task Content */}
+              <div className="flex-1 min-w-0">
+                {editingId === task._id ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      autoFocus
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                      className="flex-1 bg-transparent border-b-2 border-[#111111] px-2 py-1 text-sm font-bold text-[#111111] uppercase tracking-widest focus:outline-none"
+                    />
                     <button
-                      onClick={() => {
-                        setEditingId(task._id);
-                        setEditingText(task.text);
-                      }}
-                      className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg"
+                      onClick={updateTask}
+                      className="p-1 text-[#111111] hover:text-[#d0f4e0] transition-colors"
                     >
-                      <Edit3 className="w-4 h-4" />
+                      <Check className="w-4 h-4 stroke-[1.5px]" />
                     </button>
                     <button
-                      onClick={() => deleteTask(task._id)}
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                      onClick={() => setEditingId(null)}
+                      className="p-1 text-[#111111] hover:text-[#ff99c8] transition-colors"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <X className="w-4 h-4 stroke-[1.5px]" />
                     </button>
                   </div>
+                ) : (
+                  <div className="flex flex-col">
+                    <span
+                      className={`text-sm font-bold uppercase tracking-widest break-words ${
+                        task.completed
+                          ? "text-[#666666] line-through"
+                          : "text-[#111111]"
+                      }`}
+                    >
+                      {task.text}
+                    </span>
+                    <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#666666] mt-2">
+                      <Calendar className="w-3 h-3 stroke-[1.5px]" />
+                      {new Date(task.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
                 )}
-              </motion.li>
-            ))
-          )}
-        </AnimatePresence>
+              </div>
+
+              {/* Actions */}
+              {!editingId && (
+                <div className="flex items-center gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => {
+                      setEditingId(task._id);
+                      setEditingText(task.text);
+                    }}
+                    className="p-1 text-[#666666] hover:text-[#111111] transition-colors"
+                  >
+                    <Edit3 className="w-4 h-4 stroke-[1.5px]" />
+                  </button>
+                  <button
+                    onClick={() => deleteTask(task._id)}
+                    className="p-1 text-[#666666] hover:text-[#ff99c8] transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4 stroke-[1.5px]" />
+                  </button>
+                </div>
+              )}
+            </li>
+          ))
+        )}
       </ul>
     </div>
   );

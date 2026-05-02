@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import api from "../utils/api";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Activity,
   Plus,
   Trash2,
   Flame,
-  CheckCircle2,
   ChevronDown,
   ChevronUp,
   CalendarDays,
@@ -104,23 +102,19 @@ export default function FullHabitDashboard() {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-10 min-h-screen bg-white">
       {/* Header */}
-      <motion.header
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row sm:items-end justify-between gap-4"
-      >
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#666666]/20 pb-6 transition-opacity duration-300">
         <div>
-          <div className="flex items-start gap-3">
-            <div className="p-3 rounded-xl bg-orange-500 shadow-lg shadow-orange-500/25">
-              <Activity className="w-6 h-6 text-white" />
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-[#fcf5bf] border border-[#111111] text-[#111111]">
+              <Activity className="w-6 h-6 stroke-[1.5px]" />
             </div>
             <div>
-              <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">
+              <h1 className="text-3xl font-display font-bold text-[#111111] uppercase tracking-widest">
                 Axio-Habits
               </h1>
-              <p className="text-sm text-slate-500 font-medium">
+              <p className="text-sm text-[#666666] font-bold uppercase tracking-widest mt-1">
                 Consistency over the last 30 days
               </p>
             </div>
@@ -129,58 +123,49 @@ export default function FullHabitDashboard() {
 
         <button
           onClick={() => setIsFormOpen(!isFormOpen)}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-orange-500 text-white font-semibold rounded-2xl shadow-lg hover:bg-orange-600 transition"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-[#111111] border border-[#111111] text-white font-bold uppercase tracking-widest hover:bg-[#666666] transition-colors text-sm"
         >
-          {isFormOpen ? <ChevronUp /> : <Plus />}
-          {isFormOpen ? "Close" : "New Habit"}
+          {isFormOpen ? <ChevronUp className="w-4 h-4 stroke-[1.5px]" /> : <Plus className="w-4 h-4 stroke-[1.5px]" />}
+          {isFormOpen ? "CLOSE" : "NEW HABIT"}
         </button>
-      </motion.header>
+      </header>
 
       {/* Add Habit */}
-      <AnimatePresence>
-        {isFormOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
+      {isFormOpen && (
+        <div className="border border-[#111111] bg-white p-4 sm:p-6 flex flex-col sm:flex-row gap-3">
+          <input
+            autoFocus
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addHabit()}
+            placeholder="HABIT NAME"
+            className="flex-1 px-4 py-3 bg-transparent border-b-2 border-[#111111] text-sm font-bold text-[#111111] uppercase tracking-widest focus:outline-none placeholder-[#666666]/50"
+          />
+          <button
+            onClick={addHabit}
+            className="px-8 py-3 bg-[#111111] text-white text-sm font-bold uppercase tracking-widest hover:bg-[#d0f4e0] hover:text-[#111111] border border-transparent hover:border-[#111111] transition-colors"
           >
-            <div className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200 shadow-xl flex flex-col sm:flex-row gap-3">
-              <input
-                autoFocus
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && addHabit()}
-                placeholder="Habit name"
-                className="flex-1 px-5 py-3 rounded-2xl bg-slate-50 focus:ring-2 focus:ring-orange-400 outline-none"
-              />
-              <button
-                onClick={addHabit}
-                className="px-8 py-3 rounded-2xl bg-slate-900 text-white font-semibold hover:bg-orange-600 transition"
-              >
-                Create
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            CREATE
+          </button>
+        </div>
+      )}
 
       {/* Heatmap Board */}
-      <div className="bg-white w-full rounded-3xl border border-slate-200 shadow-2xl overflow-hidden">
+      <div className="bg-white w-full border border-[#111111] overflow-hidden transition-colors hover:border-[#fcf5bf]">
         <div className="overflow-x-auto w-full">
           <div className="min-w-[900px] px-2 py-4 sm:px-4 lg:px-6 sm:py-6 lg:py-8">
             {/* Header row */}
-            <div className="flex border-b pb-4 mb-4 text-xs uppercase tracking-widest text-slate-400 font-bold">
-              <div className="w-40 md:w-52 flex items-center gap-2 shrink-0 sticky left-0 z-30 bg-white border-r border-slate-200 shadow-sm">
-                <CalendarDays className="w-4 h-4" />
-                Habits
+            <div className="flex border-b border-[#666666]/20 pb-4 mb-4 text-xs uppercase tracking-widest text-[#666666] font-bold">
+              <div className="w-40 md:w-52 flex items-center gap-2 shrink-0 sticky left-0 z-30 bg-white border-r border-[#666666]/20 pr-4">
+                <CalendarDays className="w-4 h-4 stroke-[1.5px]" />
+                HABITS
               </div>
               <div className="flex gap-2 pl-2">
                 {days.map((day) => (
-                  <div key={day} className="w-6 text-center">
+                  <div key={day} className="w-6 text-center flex flex-col items-center">
                     <div
                       className={`text-[9px] font-bold ${
-                        day === today ? "text-orange-500" : "text-slate-400"
+                        day === today ? "text-[#111111]" : "text-[#666666]"
                       }`}
                     >
                       {new Date(day).toLocaleDateString(undefined, {
@@ -188,10 +173,10 @@ export default function FullHabitDashboard() {
                       })}
                     </div>
                     <div
-                      className={`mt-1 w-5 h-5 mx-auto rounded-md flex items-center justify-center text-[9px] font-black ${
+                      className={`mt-1 w-5 h-5 flex items-center justify-center text-[9px] font-bold border ${
                         day === today
-                          ? "bg-orange-500 text-white"
-                          : "bg-slate-50 text-slate-400"
+                          ? "bg-[#111111] text-white border-[#111111]"
+                          : "bg-white text-[#666666] border-transparent"
                       }`}
                     >
                       {day.slice(-2)}
@@ -204,70 +189,63 @@ export default function FullHabitDashboard() {
             {/* Habit rows */}
             <div className="space-y-3 bg-white">
               {habits.length === 0 && (
-                <p className="text-center text-slate-400 py-10 italic">
+                <p className="text-center text-[#666666] py-10 font-bold uppercase tracking-widest text-sm">
                   No habits yet. Start with one.
                 </p>
               )}
 
-              <AnimatePresence>
-                {habits.map((habit) => (
-                  <motion.div
-                    key={habit._id}
-                    layout
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="flex items-center gap-2 group min-w-full bg-white"
+              {habits.map((habit) => (
+                <div
+                  key={habit._id}
+                  className="flex items-center gap-2 group min-w-full bg-white transition-opacity"
+                >
+                  <div className="w-40 md:w-52 shrink-0 flex items-center gap-3 pr-2 sticky left-0 z-20 bg-white border-r border-[#666666]/20">
+                    <div className="w-3 h-3 bg-[#fcf5bf] border border-[#111111] flex items-center justify-center group-hover:bg-[#111111] transition-colors">
+                    </div>
+                    <span className="font-bold text-xs uppercase tracking-widest text-[#111111] truncate bg-white">
+                      {habit.name}
+                    </span>
+                  </div>
+
+                  <div className="flex gap-2">
+                    {days.map((day) => (
+                      <button
+                        key={day}
+                        onClick={() => toggleDay(habit._id, day)}
+                        className={`w-6 h-6 border transition-colors ${
+                          habit.logs?.[day]
+                            ? "bg-[#111111] border-[#111111]"
+                            : "bg-white border-[#666666]/20 hover:border-[#111111]"
+                        } ${day === today ? "ring-1 ring-[#111111] ring-offset-1" : ""}`}
+                      />
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => deleteHabit(habit._id)}
+                    className="ml-auto p-2 opacity-0 group-hover:opacity-100 hover:text-[#ff99c8] text-[#666666] transition-colors border border-transparent hover:border-[#ff99c8]"
                   >
-                    <div className="w-40 md:w-52 shrink-0 flex items-center gap-3 pr-2 sticky left-0 z-20 bg-white border-r border-slate-200 shadow-sm">
-                      <div className="w-3 h-3 rounded-lg bg-orange-300 flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition">
-                        {/* <CheckCircle2 className="w-4 h-4" /> */}
-                      </div>
-                      <span className="font-semibold text-sm text-slate-700 truncate bg-white">
-                        {habit.name}
-                      </span>
-                    </div>
-
-                    <div className="flex gap-2">
-                      {days.map((day) => (
-                        <button
-                          key={day}
-                          onClick={() => toggleDay(habit._id, day)}
-                          className={`w-6 h-6 rounded-md border transition ${
-                            habit.logs?.[day]
-                              ? "bg-orange-500 border-orange-600"
-                              : "bg-slate-50 border-slate-200 hover:border-slate-400"
-                          } ${day === today ? "ring-2 ring-orange-200" : ""}`}
-                        />
-                      ))}
-                    </div>
-
-                    <button
-                      onClick={() => deleteHabit(habit._id)}
-                      className="ml-auto p-2 opacity-0 group-hover:opacity-100 rounded-xl hover:bg-red-50 text-slate-400 hover:text-red-600 transition"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+                    <Trash2 className="w-4 h-4 stroke-[1.5px]" />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-slate-50 border-t flex flex-wrap gap-4 justify-between items-center text-[10px] uppercase tracking-widest font-bold text-slate-400">
+        <div className="px-6 py-4 bg-white border-t border-[#666666]/20 flex flex-wrap gap-4 justify-between items-center text-[10px] uppercase tracking-widest font-bold text-[#666666]">
           <div className="flex gap-4">
-            <span className="flex items-center gap-1">
-              <span className="w-3 h-3 bg-slate-200 rounded" /> Incomplete
+            <span className="flex items-center gap-2">
+              <span className="w-3 h-3 bg-white border border-[#666666]/20" /> INCOMPLETE
             </span>
-            <span className="flex items-center gap-1">
-              <span className="w-3 h-3 bg-orange-500 rounded" /> Complete
+            <span className="flex items-center gap-2">
+              <span className="w-3 h-3 bg-[#111111] border border-[#111111]" /> COMPLETE
             </span>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-orange-600">
-            <Flame className="w-3 h-3" />
-            Streak Active
+          <div className="flex items-center gap-2 px-3 py-1 border border-[#111111] bg-[#fcf5bf] text-[#111111]">
+            <Flame className="w-3 h-3 stroke-[1.5px]" />
+            STREAK ACTIVE
           </div>
         </div>
       </div>

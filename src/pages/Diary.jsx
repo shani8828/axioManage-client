@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import api from "../utils/api";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   BookText,
   Plus,
@@ -46,7 +45,7 @@ export default function Diary() {
     }
 
     const toastId = toast.loading(
-      editingId ? "Updating entry..." : "Saving entry..."
+      editingId ? "Updating entry..." : "Saving entry...",
     );
 
     try {
@@ -71,7 +70,6 @@ export default function Diary() {
     setEditingId(entry._id);
     setIsExpanded(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
-    toast("Editing entry", { icon: "📝" });
   };
 
   const handleDelete = async (id) => {
@@ -86,33 +84,26 @@ export default function Diary() {
   };
 
   return (
-    <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+    <section className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-10">
       {/* Header */}
-      <motion.header
-        initial={{ opacity: 0, y: -16 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col gap-3"
-      >
-        <div className="flex items-start gap-4">
-          <div className="p-3 rounded-2xl bg-emerald-600 shadow-lg shadow-emerald-600/25">
-            <BookText className="w-6 h-6 text-white" />
+      <header className="flex flex-col gap-4 border-b-2 border-[#111111] pb-6 transition-opacity duration-300">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-[#ff99c8] text-[#111111] border-2 border-[#111111] shadow-[4px_4px_0px_0px_#111]">
+            <BookText className="w-6 h-6 stroke-[2px]" />
           </div>
           <div>
-            <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">
+            <h1 className="text-3xl font-display font-bold text-[#111111] uppercase tracking-widest">
               Axio-Diary
             </h1>
-            <p className="text-slate-500 text-sm font-medium">
-              Private reflections. Clear thoughts. Better days.
+            <p className="text-[#666666] text-sm font-bold uppercase tracking-widest mt-1">
+              Private reflections. Clear thoughts.
             </p>
           </div>
         </div>
-      </motion.header>
+      </header>
 
       {/* Editor */}
-      <motion.div
-        layout
-        className="bg-white rounded-3xl border border-slate-200/60 shadow-lg shadow-slate-200/40 overflow-hidden"
-      >
+      <div className="bg-[#e8c0fc] border-2 border-[#111111] transition-all overflow-hidden shadow-[6px_6px_0px_0px_#111]">
         <button
           onClick={() => {
             setIsExpanded(!isExpanded);
@@ -121,135 +112,113 @@ export default function Diary() {
               setText("");
             }
           }}
-          className="w-full px-6 sm:px-8 py-5 flex items-center justify-between hover:bg-slate-50 transition"
+          className="w-full px-6 py-5 flex items-center justify-between hover:bg-white transition-colors border-b-2 border-transparent hover:border-[#111111]"
         >
-          <div className="flex items-center gap-3 font-semibold text-slate-800">
+          <div className="flex items-center gap-3 font-bold text-[#111111] uppercase tracking-widest text-sm">
             {editingId ? (
-              <Edit3 className="w-5 h-5 text-emerald-600" />
+              <Edit3 className="w-5 h-5 stroke-[2px]" />
             ) : (
-              <Plus className="w-5 h-5 text-emerald-600" />
+              <Plus className="w-5 h-5 stroke-[2px]" />
             )}
-            {editingId ? "Edit reflection" : "New reflection"}
+            {editingId ? "EDIT REFLECTION" : "NEW REFLECTION"}
           </div>
           {isExpanded ? (
-            <ChevronUp className="w-5 h-5 text-slate-400" />
+            <ChevronUp className="w-5 h-5 text-[#111111] stroke-[2px]" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-slate-400" />
+            <ChevronDown className="w-5 h-5 text-[#111111] stroke-[2px]" />
           )}
         </button>
 
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="px-6 sm:px-8 pb-8 space-y-5"
-            >
-              <textarea
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Write freely. No pressure. No judgment."
-                rows={7}
-                className="w-full rounded-2xl bg-slate-50 px-5 py-4 text-slate-700 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none resize-none"
-              />
+        {isExpanded && (
+          <div className="px-6 pb-6 pt-2 border-t-2 border-[#111111] bg-white transition-opacity duration-300 space-y-6">
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="WRITE FREELY..."
+              rows={7}
+              className="w-full bg-transparent border-b-2 border-[#111111] px-2 py-4 text-[#111111] focus:bg-[#e8c0fc]/10 focus:outline-none resize-none transition-colors font-medium text-base"
+            />
 
-              <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                onClick={handleAddOrUpdate}
+                className="flex-1 inline-flex items-center justify-center gap-2 border-2 border-[#111111] bg-[#111111] py-3 font-bold text-white uppercase tracking-widest hover:bg-[#ff99c8] hover:text-[#111111] transition-colors text-sm"
+              >
+                <Save className="w-4 h-4 stroke-[2px]" />
+                {editingId ? "UPDATE ENTRY" : "SAVE ENTRY"}
+              </button>
+
+              {editingId && (
                 <button
-                  onClick={handleAddOrUpdate}
-                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3 font-semibold text-white shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 transition"
+                  onClick={() => {
+                    setEditingId(null);
+                    setText("");
+                    setIsExpanded(false);
+                  }}
+                  className="inline-flex items-center justify-center gap-2 border-2 border-[#111111] bg-white px-8 py-3 font-bold text-[#111111] uppercase tracking-widest hover:bg-[#111111] hover:text-white transition-colors text-sm"
                 >
-                  <Save className="w-5 h-5" />
-                  {editingId ? "Update entry" : "Save entry"}
+                  <X className="w-4 h-4 stroke-[2px]" />
+                  CANCEL
                 </button>
-
-                {editingId && (
-                  <button
-                    onClick={() => {
-                      setEditingId(null);
-                      setText("");
-                      setIsExpanded(false);
-                    }}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 px-6 py-3 font-semibold text-slate-600 hover:bg-slate-200 transition"
-                  >
-                    <X className="w-5 h-5" />
-                    Cancel
-                  </button>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Entries */}
-      <div className="space-y-5">
-        <AnimatePresence mode="popLayout">
-          {loading ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex justify-center py-20"
+      <div className="space-y-6">
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <div className="w-8 h-8 border-[4px] border-[#111111] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : entries.length === 0 ? (
+          <div className="border-2 border-[#111111] bg-[#fcf5bf] py-20 text-center shadow-[4px_4px_0px_0px_#111]">
+            <p className="text-[#111111] font-bold uppercase tracking-widest text-sm">
+              NO ENTRIES YET. START WITH YOUR FIRST THOUGHT.
+            </p>
+          </div>
+        ) : (
+          entries.map((entry) => (
+            <article
+              key={entry._id}
+              className="group bg-white p-6 sm:p-8 border-2 border-[#111111] hover:shadow-[6px_6px_0px_0px_#111] hover:-translate-y-1 hover:-translate-x-1 transition-all"
             >
-              <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-            </motion.div>
-          ) : entries.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 py-20 text-center"
-            >
-              <p className="text-slate-400 font-medium">
-                No entries yet. Start with your first thought.
+              <p className="text-[#111111] leading-relaxed whitespace-pre-wrap text-base">
+                {entry.content}
               </p>
-            </motion.div>
-          ) : (
-            entries.map((entry, idx) => (
-              <motion.article
-                key={entry._id}
-                layout
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 12 }}
-                transition={{ delay: idx * 0.04 }}
-                className="group rounded-3xl bg-white p-6 sm:p-7 border border-slate-200/60 shadow-sm hover:shadow-lg hover:shadow-slate-200/50 transition"
-              >
-                <p className="text-slate-700 leading-relaxed whitespace-pre-wrap font-medium">
-                  {entry.content}
-                </p>
 
-                <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <Calendar className="w-4 h-4" />
-                    <span className="text-xs font-semibold tracking-wide">
-                      {new Date(entry.createdAt).toLocaleDateString(undefined, {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition">
-                    <button
-                      onClick={() => handleEdit(entry)}
-                      className="p-2 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition"
-                    >
-                      <Edit3 className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(entry._id)}
-                      className="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
+              <div className="mt-8 pt-6 border-t-2 border-[#111111]/10 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                <div className="flex items-center gap-2 text-[#111111]/70 bg-[#fcf5bf] px-3 py-1 border-2 border-[#111111]">
+                  <Calendar className="w-4 h-4 stroke-[2px] text-[#111111]" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#111111]">
+                    {new Date(entry.createdAt).toLocaleDateString(undefined, {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
                 </div>
-              </motion.article>
-            ))
-          )}
-        </AnimatePresence>
+
+                <div className="flex items-center gap-3 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => handleEdit(entry)}
+                    className="p-2 bg-[#a8defa] text-[#111111] hover:bg-[#111111] hover:text-white transition-all border-2 border-[#111111]"
+                  >
+                    <Edit3 className="w-4 h-4 stroke-[2px]" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(entry._id)}
+                    className="p-2 bg-[#ff99c8] text-[#111111] hover:bg-[#111111] hover:text-white transition-all border-2 border-[#111111]"
+                  >
+                    <Trash2 className="w-4 h-4 stroke-[2px]" />
+                  </button>
+                </div>
+              </div>
+            </article>
+          ))
+        )}
       </div>
     </section>
   );

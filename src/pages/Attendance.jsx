@@ -3,9 +3,9 @@ import AttendanceChart from "../components/AttendanceChart";
 import Timeline from "../components/Timeline";
 import AttendanceDayChart from "../components/AttendanceDayChart";
 import api from "../utils/api";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
+import { Edit2, Trash2 } from "lucide-react";
 
-// Helpers
 const getDateString = (date) => date.toISOString().split("T")[0];
 const formatCompactDate = (dateStr) => {
   const d = new Date(dateStr);
@@ -28,6 +28,7 @@ const getTodayString = () => {
     .toISOString()
     .split("T")[0];
 };
+
 const Attendance = () => {
   const [attendance, setAttendance] = useState({});
   const [dates, setDates] = useState([]);
@@ -36,16 +37,15 @@ const Attendance = () => {
   const [showModal, setShowModal] = useState(false);
   const [newStudentName, setNewStudentName] = useState("");
   const [range, setRange] = useState("30");
-  const [editStudent, setEditStudent] = useState(null); // { _id, name }
+  const [editStudent, setEditStudent] = useState(null);
   const [editName, setEditName] = useState("");
   const todayStr = getTodayString();
   const today = new Date(todayStr);
-  const endOfMonth = new Date(today.getFullYear(), today.getMonth(), 3); //
   const endOfShow = new Date(todayStr);
   const startOfShow = new Date(endOfShow);
   startOfShow.setDate(startOfShow.getDate() - (Number(range) - 1));
-  // Fixed start date (1 jan for your example)
-  const startDate = new Date(2026, 0, 1); // month is 0-indexed → 0 = January
+  const startDate = new Date(2026, 0, 1);
+
   const fetchStudents = async () => {
     const toastId = toast.loading("Loading students...");
     try {
@@ -56,6 +56,7 @@ const Attendance = () => {
       toast.error("Failed to load students", { id: toastId });
     }
   };
+
   useEffect(() => {
     const datesRange = generateDateRange(startOfShow, endOfShow);
     setDates(datesRange);
@@ -84,6 +85,7 @@ const Attendance = () => {
     };
     fetchAttendance();
   }, [todayStr, range]);
+
   const handleStatusChange = (studentId, date, status) => {
     setAttendance((prev) => ({
       ...prev,
@@ -93,7 +95,7 @@ const Attendance = () => {
       },
     }));
   };
-  // Student % = from start date to today only
+
   const calcStudentPresencePercent = (studentId) => {
     const validDates = dates.filter((d) => d <= todayStr);
     const records = attendance[studentId] || {};
@@ -104,9 +106,9 @@ const Attendance = () => {
     });
     return total ? ((presentCount / total) * 100).toFixed(2) : "0.00";
   };
-  // Per-day % (only for past + today)
+
   const calcDatePresencePercent = (date) => {
-    if (date > todayStr) return null; // skip future
+    if (date > todayStr) return null;
     let presentCount = 0;
     let totalStudents = students.length;
     students.forEach(({ _id }) => {
@@ -116,6 +118,7 @@ const Attendance = () => {
       ? ((presentCount / totalStudents) * 100).toFixed(2)
       : "0.00";
   };
+
   const handleSubmitToday = async () => {
     const toastId = toast.loading("Saving attendance...");
     try {
@@ -132,16 +135,19 @@ const Attendance = () => {
       console.error("Error submitting attendance:", error);
     }
   };
+
   const studentChartData = students.map((s) => ({
     name: s.name,
     percent: Number(calcStudentPresencePercent(s._id)),
   }));
+
   const dayChartData = dates
     .filter((d) => d <= todayStr)
     .map((date) => ({
       date: formatCompactDate(date),
       percent: Number(calcDatePresencePercent(date)),
     }));
+
   const handleEditStudent = async () => {
     if (!editName.trim()) return toast.error("Name cannot be empty");
     const toastId = toast.loading("Updating student...");
@@ -156,6 +162,7 @@ const Attendance = () => {
       toast.error("Failed to update student", { id: toastId });
     }
   };
+
   const handleDeleteStudent = async (studentId) => {
     if (!window.confirm("Delete this student? Attendance will be removed.")) {
       return;
@@ -169,81 +176,82 @@ const Attendance = () => {
       toast.error("Failed to delete student", { id: toastId });
     }
   };
+
   if (loading)
     return (
-      <div className="fixed inset-0 flex flex-col items-center justify-center bg-white/40 dark:bg-black/60 backdrop-blur-sm z-50">
-        <div className="w-64 h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-          <div className="w-1/3 h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 rounded-full animate-[shimmer_2s_infinite]"></div>
-        </div>
-        <div className="mt-8 text-lg font-medium text-gray-700 dark:text-gray-300 tracking-wide">
+      <div className="fixed inset-0 flex flex-col items-center justify-center bg-white z-50">
+        <div className="mt-8 text-lg font-display font-bold text-[#111111] tracking-widest uppercase">
           Loading attendance data...
-        </div>
-        <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          Please wait a moment
         </div>
       </div>
     );
+
   return (
-    <div className="p-4 max-w-full mx-auto pt-20 text-gray-900 dark:text-gray-100">
+    <div className="p-4 max-w-7xl mx-auto pt-20 text-[#111111] bg-white min-h-screen space-y-10">
       <Timeline />
-      <h1 className="text-xl font-bold mb-4">
-        Attendance Register ({dates[0]} - {dates[dates.length - 1]})
-      </h1>{" "}
-      <div className="flex gap-2 justify-between items-center my-3">
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-green-600 text-white px-4 py-1 rounded text-sm"
-        >
-          New student?
-        </button>
-        <select
-          value={range}
-          onChange={(e) => setRange(e.target.value)}
-          className="border rounded px-2 py-1 text-sm dark:bg-gray-800"
-        >
-          <option value="7">Last week</option>
-          <option value="30">Last 30 days</option>
-          <option value="90">Last 3 months</option>
-        </select>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="table-auto border-collapse border border-gray-300 dark:border-gray-600 w-full min-w-[1000px] text-xs">
+
+      <header className="flex flex-col sm:flex-row justify-between items-end gap-4 border-b border-[#666666]/20 pb-6">
+        <div>
+          <h1 className="text-3xl font-display font-bold text-[#111111] uppercase tracking-widest">
+            ATTENDANCE REGISTER
+          </h1>
+          <p className="text-sm font-bold text-[#666666] uppercase tracking-widest mt-1">
+            {dates[0]} TO {dates[dates.length - 1]}
+          </p>
+        </div>
+
+        <div className="flex gap-4 items-center">
+          <button
+            onClick={() => setShowModal(true)}
+            className="border border-[#111111] bg-[#d0f4e0] text-[#111111] px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-[#111111] hover:text-white transition-colors"
+          >
+            NEW STUDENT
+          </button>
+          <select
+            value={range}
+            onChange={(e) => setRange(e.target.value)}
+            className="border border-[#111111] bg-transparent px-3 py-2 text-xs font-bold uppercase tracking-widest focus:outline-none"
+          >
+            <option value="7">LAST WEEK</option>
+            <option value="30">LAST 30 DAYS</option>
+            <option value="90">LAST 3 MONTHS</option>
+          </select>
+        </div>
+      </header>
+
+      <div className="overflow-x-auto border border-[#111111] bg-white">
+        <table className="table-auto w-full min-w-[1000px] text-xs font-bold uppercase tracking-widest">
           <thead>
-            <tr className="bg-gray-100 dark:bg-gray-800">
-              <th className="border border-gray-300 dark:border-gray-600 px-2 py-1 sticky left-0 bg-inherit z-10 w-8">
+            <tr className="bg-transparent border-b border-[#111111]">
+              <th className="border-r border-[#111111] px-3 py-4 sticky left-0 bg-white z-10 w-8">
                 #
               </th>
-              <th className="border border-gray-300 dark:border-gray-600 px-2 py-1 sticky left-8 bg-inherit z-10 min-w-[120px]">
-                Student
+              <th className="border-r border-[#111111] px-4 py-4 sticky left-8 bg-white z-10 min-w-[120px] text-left">
+                STUDENT
               </th>
               {dates.map((date) => (
                 <th
                   key={date}
-                  className="border border-gray-300 dark:border-gray-600 px-1 py-3 text-center align-bottom"
-                  style={{
-                    minWidth: "24px",
-                    maxWidth: "24px",
-                    verticalAlign: "bottom",
-                  }}
+                  className="border-r border-[#666666]/20 px-1 py-4 text-center align-bottom"
+                  style={{ minWidth: "28px", maxWidth: "28px" }}
                   title={date}
                 >
                   <div
                     style={{
-                      transform: "rotate(-60deg)",
+                      transform: "rotate(-90deg)",
                       whiteSpace: "nowrap",
-                      marginBottom: "6px",
-                      fontWeight: "600",
+                      marginBottom: "8px",
                     }}
                   >
                     {formatCompactDate(date)}
                   </div>
                 </th>
               ))}
-              <th className="border border-gray-300 dark:border-gray-600 px-2 py-1 min-w-[48px]">
+              <th className="border-l border-[#111111] px-3 py-4 min-w-[48px]">
                 %
               </th>
-              <th className="border border-gray-300 dark:border-gray-600 px-2 py-1 sticky left-[200px] bg-inherit z-10">
-                Actions
+              <th className="border-l border-[#111111] px-3 py-4 sticky right-0 bg-white z-10">
+                ACTIONS
               </th>
             </tr>
           </thead>
@@ -251,124 +259,130 @@ const Attendance = () => {
             {students.map((student, idx) => (
               <tr
                 key={student._id}
-                className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="hover:bg-[#666666]/5 transition-colors border-b border-[#666666]/20"
               >
-                <td className="border border-gray-300 dark:border-gray-600 px-2 py-1 sticky left-0 bg-white dark:bg-gray-900 z-10 text-center">
+                <td className="border-r border-[#111111] px-3 py-2 sticky left-0 bg-white z-10 text-center">
                   {idx + 1}
                 </td>
-                <td className="border border-gray-300 dark:border-gray-600 px-2 py-1 sticky left-8 bg-white dark:bg-gray-900 z-10">
+                <td className="border-r border-[#111111] px-4 py-2 sticky left-8 bg-white z-10 text-left">
                   {student.name}
                 </td>
                 {dates.map((date) => {
                   const currentStatus = attendance[student._id]?.[date] || "";
                   const isPast = date < todayStr;
                   const isToday = date === todayStr;
-                  const isFuture = date > todayStr;
+
                   return (
                     <td
                       key={date}
-                      className="border border-gray-300 dark:border-gray-600 px-0.5 py-0.5 text-center"
-                      style={{ minWidth: "24px", maxWidth: "24px" }}
+                      className="border-r border-[#666666]/20 px-1 py-1 text-center"
+                      style={{ minWidth: "28px", maxWidth: "28px" }}
                     >
                       {isPast ? (
                         <span
-                          className={`font-semibold ${
-                            currentStatus === "Present"
-                              ? "text-green-600"
-                              : "text-red-600"
+                          className={`text-lg leading-none ${
+                            currentStatus === "Present" ? "text-[#111111]" : "text-[#ff99c8]"
                           }`}
                           title={currentStatus || "Absent"}
                         >
-                          {currentStatus === "Present" ? "✓" : "✗"}
+                          {currentStatus === "Present" ? "●" : "○"}
                         </span>
                       ) : isToday ? (
                         <select
-                          className="border rounded text-[10px] p-0 w-full h-6 bg-white dark:bg-gray-800 dark:text-gray-100"
+                          className="border border-[#111111] bg-transparent text-[10px] w-full h-6 focus:outline-none focus:ring-1 focus:ring-[#111111]"
                           value={currentStatus}
                           onChange={(e) =>
-                            handleStatusChange(
-                              student._id,
-                              date,
-                              e.target.value,
-                            )
+                            handleStatusChange(student._id, date, e.target.value)
                           }
                         >
-                          <option value="">☐</option>
-                          <option value="Present" className="text-green-500">✓</option>
-                          <option value="Absent" className="text-red-500">✗</option>
+                          <option value="">-</option>
+                          <option value="Present">P</option>
+                          <option value="Absent">A</option>
                         </select>
                       ) : (
-                        <span className="text-gray-400">--</span>
+                        <span className="text-[#666666]/50">-</span>
                       )}
                     </td>
                   );
                 })}
-                <td className="border border-gray-300 dark:border-gray-600 px-2 py-1 text-center font-semibold">
+                <td className="border-l border-[#111111] px-3 py-2 text-center text-[#111111] bg-[#d0f4e0]/10">
                   {calcStudentPresencePercent(student._id)}%
                 </td>
-                <td className="border border-gray-300 dark:border-gray-600 px-2 py-1 sticky left-[200px] bg-white dark:bg-gray-900 z-10">
-                  <div className="flex gap-2 text-xs items-center justify-evenly">
+                <td className="border-l border-[#111111] px-3 py-2 sticky right-0 bg-white z-10">
+                  <div className="flex gap-3 justify-center items-center">
                     <button
                       onClick={() => {
                         setEditStudent(student);
                         setEditName(student.name);
                       }}
-                      className="text-blue-600 hover:underline  hover:scale-105 transition-all duration-300"
-                    >✎</button>
+                      className="text-[#666666] hover:text-[#111111] transition-colors"
+                    >
+                      <Edit2 className="w-4 h-4 stroke-[1.5px]" />
+                    </button>
                     <button
                       onClick={() => handleDeleteStudent(student._id)}
-                      className="text-red-600 hover:underline hover:scale-105 transition-all duration-300 font-bold"
-                    >🗑⃨̅̅̅</button>
+                      className="text-[#666666] hover:text-[#ff99c8] transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4 stroke-[1.5px]" />
+                    </button>
                   </div>
                 </td>
               </tr>
             ))}
-            <tr className="bg-gray-100 dark:bg-gray-800 font-semibold">
-              <td
-                className="border border-gray-300 dark:border-gray-600 px-2 py-1"
-                colSpan={2}
-              >
-                Total %
+            <tr className="bg-[#111111] text-white border-t-2 border-[#111111]">
+              <td className="border-r border-white/20 px-3 py-3" colSpan={2}>
+                TOTAL %
               </td>
               {dates.map((date) => (
                 <td
                   key={date}
-                  className="border border-gray-300 dark:border-gray-600 px-0.5 py-1 text-center"
-                  style={{ minWidth: "24px", maxWidth: "24px" }}
+                  className="border-r border-white/20 px-1 py-3 text-center"
+                  style={{ minWidth: "28px", maxWidth: "28px" }}
                 >
                   {calcDatePresencePercent(date)}
                 </td>
               ))}
-              <td className="border border-gray-300 dark:border-gray-600 px-2 py-1"></td>
+              <td className="border-l border-white/20 px-3 py-3" colSpan={2}></td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div className="mt-4 text-right">
+
+      <div className="flex justify-end pt-4">
         <button
           onClick={handleSubmitToday}
-          className="bg-blue-600 text-white px-5 py-1 rounded hover:bg-blue-700 text-sm"
+          className="border border-[#111111] bg-[#111111] text-white px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-[#a8defa] hover:text-[#111111] transition-colors"
         >
-          Save Today's Attendance
+          SAVE TODAY'S ATTENDANCE
         </button>
       </div>
-      {/* <Task3 /> */}
-      <AttendanceChart data={studentChartData} />
-      <AttendanceDayChart data={dayChartData} />
+
+      <div className="space-y-10">
+        <AttendanceChart data={studentChartData} />
+        <AttendanceDayChart data={dayChartData} />
+      </div>
+
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-900 p-4 rounded w-72">
-            <h3 className="font-semibold mb-3">Add Student</h3>
+        <div className="fixed inset-0 bg-white/90 flex items-center justify-center z-50">
+          <div className="bg-white border border-[#111111] p-6 w-80 shadow-2xl">
+            <h3 className="font-display font-bold text-xl mb-4 text-[#111111] uppercase tracking-widest">
+              ADD STUDENT
+            </h3>
             <input
               value={newStudentName}
               onChange={(e) => setNewStudentName(e.target.value)}
-              className="border w-full px-2 py-1 mb-3"
-              placeholder="Student name"
+              className="border-b-2 border-[#111111] w-full px-2 py-2 mb-6 text-sm font-bold uppercase tracking-widest focus:outline-none bg-transparent"
+              placeholder="STUDENT NAME"
             />
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setShowModal(false)}>Cancel</button>
+            <div className="flex justify-end gap-3">
               <button
-                className="bg-blue-600 text-white px-3 py-1 rounded"
+                className="text-xs font-bold text-[#666666] hover:text-[#111111] uppercase tracking-widest"
+                onClick={() => setShowModal(false)}
+              >
+                CANCEL
+              </button>
+              <button
+                className="bg-[#111111] text-white border border-[#111111] px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-[#111111] transition-colors"
                 onClick={async () => {
                   const toastId = toast.loading("Adding student...");
                   try {
@@ -382,29 +396,37 @@ const Attendance = () => {
                   }
                 }}
               >
-                Save
+                SAVE
               </button>
             </div>
           </div>
         </div>
       )}
+
       {editStudent && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-900 p-4 rounded w-72">
-            <h3 className="font-semibold mb-3">Edit Student</h3>
+        <div className="fixed inset-0 bg-white/90 flex items-center justify-center z-50">
+          <div className="bg-white border border-[#111111] p-6 w-80 shadow-2xl">
+            <h3 className="font-display font-bold text-xl mb-4 text-[#111111] uppercase tracking-widest">
+              EDIT STUDENT
+            </h3>
             <input
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              className="border w-full px-2 py-1 mb-3"
-              placeholder="Student name"
+              className="border-b-2 border-[#111111] w-full px-2 py-2 mb-6 text-sm font-bold uppercase tracking-widest focus:outline-none bg-transparent"
+              placeholder="STUDENT NAME"
             />
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setEditStudent(null)}>Cancel</button>
+            <div className="flex justify-end gap-3">
               <button
-                className="bg-blue-600 text-white px-3 py-1 rounded"
+                className="text-xs font-bold text-[#666666] hover:text-[#111111] uppercase tracking-widest"
+                onClick={() => setEditStudent(null)}
+              >
+                CANCEL
+              </button>
+              <button
+                className="bg-[#111111] text-white border border-[#111111] px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-[#111111] transition-colors"
                 onClick={handleEditStudent}
               >
-                Save
+                UPDATE
               </button>
             </div>
           </div>

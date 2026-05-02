@@ -5,122 +5,60 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative border-t border-white/10 bg-gradient-to-b from-indigo-950 via-indigo-950 to-black text-indigo-100">
+    <footer className="border-t-4 border-white bg-[#111111] text-white">
       <div className="mx-auto max-w-7xl px-6 py-16">
-        {/* Top Section */}
         <div className="grid gap-12 md:grid-cols-4">
-          {/* Brand */}
           <div className="space-y-4 md:col-span-2">
-            <h3 className="text-2xl font-extrabold tracking-tight text-white">
-              Axio-<span className="text-indigo-400">Manage</span>
+            <h3 className="text-2xl font-display font-bold uppercase tracking-widest text-white">
+              Axio-<span className="text-[#a8defa]">Manage</span>
             </h3>
-            <p className="max-w-md text-sm leading-relaxed text-indigo-300">
-              Axio-Manage helps you organize tasks, habits, expenses, diaries,
+            <p className="max-w-md text-sm font-bold text-[#666666] uppercase tracking-widest">
+              Organize tasks, habits, expenses, diaries,
               and contacts in one calm, focused workspace. Built for clarity,
-              consistency, and long-term momentum.
+              consistency, and momentum.
             </p>
           </div>
 
-          {/* Product Links */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-indigo-400">
+            <h4 className="text-sm font-bold uppercase tracking-widest text-[#111111] bg-[#fcf5bf] inline-block px-2 border-2 border-transparent">
               Product
             </h4>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <Link to="/tasks" className="hover:text-white transition">
-                  Tasks
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/habit-tracker"
-                  className="hover:text-white transition"
-                >
-                  Habit Tracker
-                </Link>
-              </li>
-              <li>
-                <Link to="/expenses" className="hover:text-white transition">
-                  Expense Manager
-                </Link>
-              </li>
-              <li>
-                <Link to="/diary" className="hover:text-white transition">
-                  Personal Diary
-                </Link>
-              </li>
+            <ul className="space-y-3 text-sm font-bold uppercase tracking-widest">
+              <li><Link to="/tasks" className="hover:text-[#a8defa] transition-colors">Tasks</Link></li>
+              <li><Link to="/habit-tracker" className="hover:text-[#fcf5bf] transition-colors">Habit Tracker</Link></li>
+              <li><Link to="/expense-tracker" className="hover:text-[#d0f4e0] transition-colors">Expense Manager</Link></li>
+              <li><Link to="/diary" className="hover:text-[#e8c0fc] transition-colors">Personal Diary</Link></li>
             </ul>
           </div>
 
-          {/* Support / Info */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-indigo-400">
+            <h4 className="text-sm font-bold uppercase tracking-widest text-[#111111] bg-[#d0f4e0] inline-block px-2 border-2 border-transparent">
               Support
             </h4>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <Link
-                  to="/contact-book"
-                  className="hover:text-white transition"
-                >
-                  Contacts Book
-                </Link>
-              </li>
-              <li>
-                <Link to="/cache" className="hover:text-white transition">
-                  Cache System
-                </Link>
-              </li>
-              {/* <li>
-                <Link to="/privacy" className="hover:text-white transition">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="hover:text-white transition">
-                  Terms of Use
-                </Link>
-              </li> */}
+            <ul className="space-y-3 text-sm font-bold uppercase tracking-widest">
+              <li><Link to="/contact-book" className="hover:text-[#ff99c8] transition-colors">Contacts Book</Link></li>
+              <li><Link to="/attendance" className="hover:text-[#d0f4e0] transition-colors">Attendance</Link></li>
             </ul>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="my-12 h-px w-full bg-gradient-to-r from-transparent via-indigo-700/40 to-transparent" />
+        <div className="my-12 h-0.5 w-full bg-[#666666]/30" />
 
-        {/* Bottom Section */}
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-          <p className="text-xs text-indigo-400">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#666666]">
             © {year} Axio-Manage. All rights reserved.
           </p>
 
           <div className="flex items-center gap-5">
-            <a
-              href="mailto:shani.maurya.iitkgp@gmail.com"
-              className="group flex items-center gap-2 text-sm text-indigo-300 hover:text-white transition"
-            >
-              <Mail className="h-4 w-4" />
+            <a href="mailto:shani.maurya.iitkgp@gmail.com" className="group flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-white hover:text-[#fcf5bf] transition-colors">
+              <Mail className="h-5 w-5 stroke-[2px]" />
               Contact
-              <ArrowUpRight className="h-3 w-3 opacity-0 transition group-hover:opacity-100" />
             </a>
-
-            <a
-              href="https://github.com/shani8828"
-              target="_blank"
-              className="text-indigo-300 hover:text-white transition"
-              aria-label="GitHub"
-            >
-              <Github className="h-5 w-5" />
+            <a href="https://github.com/shani8828" target="_blank" className="text-white hover:text-[#ff99c8] transition-colors">
+              <Github className="h-5 w-5 stroke-[2px]" />
             </a>
-
-            <a
-              href="https://www.linkedin.com/in/shani8828/"
-              target="_blank"
-              className="text-indigo-300 hover:text-white transition"
-              aria-label="LinkedIn"
-            >
-              <Linkedin className="h-5 w-5" />
+            <a href="https://www.linkedin.com/in/shani8828/" target="_blank" className="text-white hover:text-[#a8defa] transition-colors">
+              <Linkedin className="h-5 w-5 stroke-[2px]" />
             </a>
           </div>
         </div>
