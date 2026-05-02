@@ -72,7 +72,7 @@ export default function Home() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-slate-50 px-5 py-20 md:px-10">
+    <div className="min-h-screen bg-slate-50 px-5 py-20 md:px-10 md:container">
       {/* Hero */}
       <motion.section
         initial={{ opacity: 0, y: -24 }}
@@ -125,16 +125,15 @@ export default function Home() {
           initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mx-auto mb-28 max-w-6xl"
+          className="mb-28"
         >
-          <div className="relative overflow-hidden rounded-[2.75rem] bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-900 p-10 text-white shadow-2xl">
+          <div className="relative mx-2 md:mx-0 md:container overflow-hidden rounded-lg bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-900 p-4 md:p-6 lg:p-10 text-white shadow-2xl">
             <Sparkles className="absolute -right-24 -top-24 h-72 w-72 opacity-[0.07]" />
-
             <div className="relative space-y-6">
-              <h2 className="text-3xl sm:text-4xl font-extrabold">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold">
                 Welcome back, {user?.name || "Achiever"}
               </h2>
-              <p className="max-w-xl text-indigo-200 text-lg">
+              <p className="max-w-xl text-indigo-200 text-sm md:text-base lg:text-lg">
                 Your progress is adding up. Stay consistent and keep moving
                 forward.
               </p>

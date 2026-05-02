@@ -55,7 +55,7 @@ export default function ExpenseTracker() {
     }
 
     const toastId = toast.loading(
-      editingId ? "Updating expense..." : "Saving expense..."
+      editingId ? "Updating expense..." : "Saving expense...",
     );
 
     const payload = {
@@ -85,7 +85,11 @@ export default function ExpenseTracker() {
     setTitle(e.title);
     setAmount(e.amount);
     setCategory(e.category);
-    setDate(e.date);
+    setDate(
+      e.date
+        ? new Date(e.date).toISOString().slice(0, 10)
+        : new Date().toISOString().slice(0, 10),
+    );
     setIsFormOpen(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -155,24 +159,24 @@ export default function ExpenseTracker() {
       {/* Form */}
       <motion.div
         layout
-        className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/40 overflow-hidden"
+        className="bg-white rounded-lg border border-slate-200 overflow-hidden"
       >
         <button
           onClick={() => setIsFormOpen(!isFormOpen)}
-          className="w-full px-6 sm:px-8 py-5 flex items-center justify-between hover:bg-slate-50 transition"
+          className="w-full px-6 py-4 flex items-center justify-between"
         >
-          <div className="flex items-center gap-3 font-semibold text-slate-800">
+          <div className="flex items-center gap-3 font-semibold text-gray-800">
             <Plus
               className={`w-5 h-5 transition-transform ${
-                isFormOpen ? "rotate-45 text-red-500" : "text-blue-500"
+                isFormOpen ? "rotate-45 text-red-500" : "text-gray-500"
               }`}
             />
             {editingId ? "Edit expense" : "Add new expense"}
           </div>
           {isFormOpen ? (
-            <ChevronUp className="w-5 h-5 text-slate-400" />
+            <ChevronUp className="w-5 h-5 text-gray-400" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-slate-400" />
+            <ChevronDown className="w-5 h-5 text-gray-400" />
           )}
         </button>
 
@@ -182,41 +186,54 @@ export default function ExpenseTracker() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="px-6 sm:px-8 pb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
+              className="px-3 md:px-5 py-2 md:py-4 "
             >
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Expense title"
-                className="lg:col-span-2 px-4 py-3 rounded-2xl bg-slate-50 focus:ring-2 focus:ring-blue-500/30 outline-none font-medium"
-              />
-
-              <div className="relative">
-                <span className="absolute left-4 top-3 text-slate-400 font-bold">
-                  ₹
-                </span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="0"
-                  className="w-full pl-8 pr-4 py-3 rounded-2xl bg-slate-50 focus:ring-2 focus:ring-blue-500/30 outline-none font-bold"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Expense title"
+                  className="px-4 py-3 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-400 outline-none"
+                />
+
+                <div className="relative">
+                  <span className="absolute left-4 top-3 text-gray-400">₹</span>
+                  <input
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="0"
+                    className="w-full pl-8 pr-4 py-3 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-400 outline-none"
+                  />
+                </div>
+
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="px-4 py-3 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-400 outline-none"
+                >
+                  {[
+                    "General",
+                    "Food",
+                    "Travel",
+                    "Shopping",
+                    "Bills",
+                    "Others",
+                  ].map((c) => (
+                    <option key={c}>{c}</option>
+                  ))}
+                </select>
+
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="px-4 py-3 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-400 outline-none"
                 />
               </div>
-
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="px-4 py-3 rounded-2xl bg-slate-50 focus:ring-2 focus:ring-blue-500/30 outline-none font-medium"
-              >
-                {["General", "Food", "Travel", "Shopping", "Bills"].map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
-              </select>
-
               <button
                 onClick={addOrUpdateExpense}
-                className="rounded-2xl bg-slate-900 text-white font-semibold hover:bg-blue-600 transition shadow-lg"
+                className="w-full py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-500 transition"
               >
                 {editingId ? "Update" : "Add"}
               </button>
