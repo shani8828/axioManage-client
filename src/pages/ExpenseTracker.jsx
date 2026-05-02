@@ -233,7 +233,7 @@ export default function ExpenseTracker() {
               </div>
               <button
                 onClick={addOrUpdateExpense}
-                className="w-full py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-500 transition"
+                className="w-full py-3 rounded-lg bg-blue-400 text-white font-semibold hover:bg-blue-500 transition"
               >
                 {editingId ? "Update" : "Add"}
               </button>
