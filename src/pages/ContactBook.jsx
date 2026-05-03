@@ -111,7 +111,7 @@ export default function ContactBook() {
           </div>
           <div>
             <h1 className="text-3xl font-display font-bold text-[#111111] uppercase tracking-widest">
-              Axio-Contacts
+              Axio-Contact
             </h1>
             <p className="text-[#666666] text-sm font-bold uppercase tracking-widest mt-1">
               Organize your network effortlessly.

@@ -1,8 +1,25 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Github, Linkedin, Mail, ArrowUpRight } from "lucide-react";
+import { Github, Linkedin, Mail, ArrowUpRight, Users } from "lucide-react";
+import api from "../utils/api";
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const [visitorCount, setVisitorCount] = useState(null);
+
+  useEffect(() => {
+    const fetchVisitorCount = async () => {
+      try {
+        const res = await api.get("/visitor", { skipCache: true });
+        if (res && res.count !== undefined) {
+          setVisitorCount(res.count);
+        }
+      } catch (err) {
+        console.error("Failed to fetch visitor count", err);
+      }
+    };
+    fetchVisitorCount();
+  }, []);
 
   return (
     <footer className="border-t-4 border-white bg-[#111111] text-white w-full">
@@ -78,6 +95,14 @@ export default function Footer() {
           <p className="text-xs font-bold uppercase tracking-widest text-[#666666]">
             © {year} Ayodhya Serenity | All rights reserved.
           </p>
+
+          {/* Visitor Count Box */}
+          {visitorCount !== null && (
+            <div className="flex items-center gap-2 border-2 border-[#666666] bg-[#111111] px-4 py-2 text-xs font-bold uppercase tracking-widest text-white shadow-[4px_4px_0px_0px_#666666]">
+              <Users className="h-4 w-4 text-[#fcf5bf] stroke-[2px]" />
+              Visitor No. <span className="text-[#a8defa]">{visitorCount}</span>
+            </div>
+          )}
 
           <div className="flex items-center gap-5">
             <a

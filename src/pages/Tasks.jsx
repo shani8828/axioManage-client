@@ -74,15 +74,15 @@ export default function Tasks() {
     <div className="min-h-screen bg-white px-4 pb-20">
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
         {/* Header */}
-        <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between transition-opacity duration-300 border-b border-[#666666]/20 pb-6">
+        <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between transition-opacity duration-300 border-b-2 border-[#111111] pb-6">
           <div className="space-y-3">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-[#a8defa] text-[#111111] border border-[#111111]">
-                <ListTodo className="w-6 h-6 stroke-[1.5px]" />
+              <div className="p-3 bg-[#a8defa] text-[#111111] border-2 border-[#111111] shadow-[4px_4px_0px_0px_#111]">
+                <ListTodo className="w-6 h-6 stroke-[2px]" />
               </div>
               <div>
                 <h1 className="text-3xl font-display font-bold text-[#111111] uppercase tracking-widest">
-                  Axio-Tasks
+                  Axio-Task
                 </h1>
                 <p className="text-[#666666] text-sm font-bold uppercase tracking-widest mt-1">
                   Organize your work into focused lists.

@@ -121,7 +121,7 @@ export default function ExpenseTracker() {
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
       {/* Header */}
-      <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-opacity duration-300">
+      <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-opacity duration-300 border-b-2 border-[#111111] pb-6">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-[#d0f4e0] text-[#111111] border-2 border-[#111111] shadow-[4px_4px_0px_0px_#111]">
             <Wallet className="w-6 h-6 stroke-[2px]" />
@@ -176,7 +176,9 @@ export default function ExpenseTracker() {
           <div className="px-6 py-6 border-t-2 border-[#111111] bg-white transition-opacity duration-300">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div className="flex flex-col">
-                <label className="text-[10px] font-bold text-[#666666] uppercase tracking-widest mb-2">Title</label>
+                <label className="text-[10px] font-bold text-[#666666] uppercase tracking-widest mb-2">
+                  Title
+                </label>
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -186,9 +188,13 @@ export default function ExpenseTracker() {
               </div>
 
               <div className="flex flex-col">
-                <label className="text-[10px] font-bold text-[#666666] uppercase tracking-widest mb-2">Amount</label>
+                <label className="text-[10px] font-bold text-[#666666] uppercase tracking-widest mb-2">
+                  Amount
+                </label>
                 <div className="relative flex items-center border-b-2 border-[#666666]/30 focus-within:border-[#111111] transition-colors">
-                  <span className="text-[#111111] font-bold mr-2 pb-2 pt-2">₹</span>
+                  <span className="text-[#111111] font-bold mr-2 pb-2 pt-2">
+                    ₹
+                  </span>
                   <input
                     type="number"
                     value={amount}
@@ -200,7 +206,9 @@ export default function ExpenseTracker() {
               </div>
 
               <div className="flex flex-col">
-                <label className="text-[10px] font-bold text-[#666666] uppercase tracking-widest mb-2">Category</label>
+                <label className="text-[10px] font-bold text-[#666666] uppercase tracking-widest mb-2">
+                  Category
+                </label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
@@ -214,7 +222,11 @@ export default function ExpenseTracker() {
                     "Bills",
                     "Others",
                   ].map((c) => (
-                    <option key={c} value={c} className="text-[#111111] uppercase">
+                    <option
+                      key={c}
+                      value={c}
+                      className="text-[#111111] uppercase"
+                    >
                       {c.toUpperCase()}
                     </option>
                   ))}
@@ -222,7 +234,9 @@ export default function ExpenseTracker() {
               </div>
 
               <div className="flex flex-col">
-                <label className="text-[10px] font-bold text-[#666666] uppercase tracking-widest mb-2">Date</label>
+                <label className="text-[10px] font-bold text-[#666666] uppercase tracking-widest mb-2">
+                  Date
+                </label>
                 <input
                   type="date"
                   value={date}
@@ -289,7 +303,9 @@ export default function ExpenseTracker() {
           <div className="space-y-4">
             {expenses.length === 0 ? (
               <div className="p-10 border-2 border-[#111111] bg-white text-center shadow-[4px_4px_0px_0px_#111]">
-                 <p className="text-[#666666] text-sm uppercase tracking-widest font-bold">No expenses found.</p>
+                <p className="text-[#666666] text-sm uppercase tracking-widest font-bold">
+                  No expenses found.
+                </p>
               </div>
             ) : (
               expenses.map((e, idx) => (
@@ -302,7 +318,9 @@ export default function ExpenseTracker() {
                       <IndianRupee className="w-4 h-4 text-[#111111] stroke-[2px]" />
                     </div>
                     <div>
-                      <p className="font-bold text-[#111111] uppercase tracking-widest line-clamp-1">{e.title}</p>
+                      <p className="font-bold text-[#111111] uppercase tracking-widest line-clamp-1">
+                        {e.title}
+                      </p>
                       <p className="text-[10px] uppercase tracking-widest text-[#666666] mt-2">
                         {e.category} • {new Date(e.date).toLocaleDateString()}
                       </p>

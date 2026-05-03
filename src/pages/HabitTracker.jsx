@@ -104,15 +104,16 @@ export default function FullHabitDashboard() {
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10 min-h-screen bg-white">
       {/* Header */}
-      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#666666]/20 pb-6 transition-opacity duration-300">
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-2 border-[#111111] pb-6 transition-opacity duration-300">
         <div>
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-[#fcf5bf] border border-[#111111] text-[#111111]">
-              <Activity className="w-6 h-6 stroke-[1.5px]" />
-            </div>
+            <div className="p-3 bg-[#fcf5bf] border-2 border-[#111111] shadow-[4px_4px_0px_0px_#111]">
+            <Activity className="w-6 h-6 stroke-[2px]" />
+          </div>
+            
             <div>
               <h1 className="text-3xl font-display font-bold text-[#111111] uppercase tracking-widest">
-                Axio-Habits
+                Axio-Habit
               </h1>
               <p className="text-sm text-[#666666] font-bold uppercase tracking-widest mt-1">
                 Track your consistency

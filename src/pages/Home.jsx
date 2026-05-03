@@ -11,6 +11,7 @@ import {
   Hexagon
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import Banner from "../components/Banner";
 
 const apps = [
   {
@@ -122,7 +123,7 @@ export default function Home() {
           </div>
         </section>
       )}
-
+      <Banner name="Axio-Manage"  />
       {/* Utilities */}
       <section className="mx-auto w-full transition-opacity duration-300">
         <div className="mb-12 flex items-center gap-6 border-b border-[#666666]/20 pb-4">
