@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import SEO from "../components/SEO";
 import { toast } from "sonner";
 import api from "../utils/api";
 import {
@@ -130,6 +131,10 @@ export default function ExpenseTracker() {
 
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+      <SEO 
+        title="Expense Tracker" 
+        description="Understand your money with clear visual insights. Track spending and stay in control with Axio-Expense." 
+      />
       {/* Header */}
       <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-opacity duration-300 border-b-2 border-[#111111] pb-6">
         <div className="flex items-center gap-4">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SEO from "../components/SEO";
 import { Heart, ShieldCheck, CreditCard, Users, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "../utils/api";
@@ -94,6 +95,10 @@ export default function Support() {
 
   return (
     <div className="min-h-screen bg-white px-4 sm:px-6 py-20 max-w-4xl mx-auto">
+      <SEO 
+        title="Support Axio-Manage" 
+        description="Fuel the momentum behind Axio-Manage. Make a donation to support the development and keep this workspace ad-free." 
+      />
       <section className="mx-auto mb-16 w-full text-center space-y-7">
         <div className="inline-flex items-center gap-2 border-2 border-[#111111] bg-[#ff99c8] px-4 py-1.5 text-sm font-bold text-[#111111] uppercase tracking-widest shadow-[4px_4px_0px_0px_#111]">
           <Heart className="h-4 w-4 stroke-[2px]" />

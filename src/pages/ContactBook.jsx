@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import SEO from "../components/SEO";
 import { toast } from "sonner";
 import api from "../utils/api";
 import { FaWhatsapp } from "react-icons/fa";
@@ -106,6 +107,10 @@ export default function ContactBook() {
 
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+      <SEO 
+        title="Contact Book" 
+        description="Organize your network effortlessly. Keep important people, clients, and friends searchable and accessible with Axio-Contact." 
+      />
       {/* Header */}
       <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between border-b-2 border-[#111111] pb-6">
         <div className="flex items-center gap-4">

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://axio-manage.vercel.app/sitemap.xml

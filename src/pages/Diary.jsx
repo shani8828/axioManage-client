@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import SEO from "../components/SEO";
 import { toast } from "sonner";
 import api from "../utils/api";
 import {
@@ -149,6 +150,10 @@ export default function Diary() {
 
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+      <SEO 
+        title="Diary" 
+        description="Capture your thoughts, ideas, and reflections privately with Axio-Diary." 
+      />
       {/* Header */}
       <header className="flex flex-col gap-4 border-b-2 border-[#111111] pb-6 transition-opacity duration-300">
         <div className="flex items-center gap-4">

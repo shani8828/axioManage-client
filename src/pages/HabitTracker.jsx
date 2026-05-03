@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import SEO from "../components/SEO";
 import { toast } from "sonner";
 import api from "../utils/api";
 import {
@@ -100,6 +101,10 @@ export default function FullHabitDashboard() {
 
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10 min-h-screen bg-white">
+      <SEO 
+        title="Habit Tracker" 
+        description="Build consistency with daily habit tracking. Track your streaks and stay motivated with Axio-Habit." 
+      />
       {/* Header */}
       <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-2 border-[#111111] pb-6 transition-opacity duration-300">
         <div>

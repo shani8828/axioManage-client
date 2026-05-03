@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import SEO from "../components/SEO";
 import Task from "../components/Task";
 import { toast } from "sonner";
 import api from "../utils/api";
@@ -70,6 +71,10 @@ export default function Tasks() {
 
   return (
     <div className="min-h-screen bg-white px-4 pb-20">
+      <SEO 
+        title="Tasks" 
+        description="Organize your work into focused lists. Plan, prioritize, and complete tasks with clarity using Axio-Manage." 
+      />
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
         {/* Header */}
         <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between transition-opacity duration-300 border-b-2 border-[#111111] pb-6">

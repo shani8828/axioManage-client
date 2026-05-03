@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
 import {
   ListTodo,
   BookText,
@@ -56,6 +57,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white px-4 sm:px-6 py-20 max-w-6xl mx-auto">
+      <SEO 
+        title="Home" 
+        description="Take control of your day with Axio-Manage. One focused space to plan tasks, build habits, manage money, and keep your life organized." 
+      />
       {/* Hero */}
       <section className="mx-auto mb-24 w-full text-center space-y-7 transition-opacity duration-300">
         <div className="inline-flex items-center gap-2 border-2 border-[#111111] bg-[#fcf5bf] px-4 py-1.5 text-sm font-bold text-[#111111] uppercase tracking-widest shadow-[4px_4px_0px_0px_#111]">
