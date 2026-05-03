@@ -29,13 +29,10 @@ export default function FullHabitDashboard() {
   const today = new Date().toISOString().slice(0, 10);
 
   const fetchHabits = async () => {
-    const t = toast.loading("Loading habits...");
     try {
       const data = await api.get("/habits");
       setHabits(data);
-      toast.dismiss(t);
     } catch {
-      toast.dismiss(t);
       toast.error("Failed to fetch habits");
     }
   };

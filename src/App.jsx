@@ -23,7 +23,7 @@ export default function App() {
     <BrowserRouter>
       <div className="min-h-screen flex flex-col bg-white">
         <Navbar />
-        {/* <Toaster position="top-center" richColors theme="light" /> */}
+        <Toaster position="top-center" richColors theme="light" />
 
         {/* Main content */}
         <main className="flex-1 text-left">

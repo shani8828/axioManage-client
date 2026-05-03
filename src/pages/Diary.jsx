@@ -87,14 +87,12 @@ export default function Diary() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const fetchEntries = async () => {
-    const toastId = toast.loading("Loading diary...");
     try {
       setLoading(true);
       const data = await api.get("/diary");
       setEntries(data);
-      // toast.success("Diary loaded", { id: toastId });
     } catch (err) {
-      toast.error(err || "Failed to load diary entries", { id: toastId });
+      toast.error(err?.response?.data?.message || "Failed to load diary entries");
     } finally {
       setLoading(false);
     }

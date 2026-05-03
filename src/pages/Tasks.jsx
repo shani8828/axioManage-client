@@ -11,13 +11,11 @@ export default function Tasks() {
   const [editName, setEditName] = useState("");
 
   const fetchLists = async () => {
-    const t = toast.loading("Loading your lists...");
     try {
       const data = await api.get("/lists");
       setLists(data);
-      toast.dismiss(t);
     } catch {
-      toast.error("Failed to fetch task lists", { id: t });
+      toast.error("Failed to fetch task lists");
     }
   };
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import api from "../utils/api";
+import { FaWhatsapp } from "react-icons/fa";
 import {
   UserPlus,
   Search,
@@ -15,7 +16,9 @@ import {
   Contact2,
   ChevronDown,
   ChevronUp,
+  FileTextIcon,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function ContactBook() {
   const [contacts, setContacts] = useState([]);
@@ -210,7 +213,7 @@ export default function ContactBook() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {loading && (
           <div className="col-span-full py-14 flex justify-center">
-             <div className="w-8 h-8 border-[4px] border-[#111111] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-[4px] border-[#111111] border-t-transparent rounded-full animate-spin" />
           </div>
         )}
         {!loading && filteredContacts.length === 0 && (
@@ -234,17 +237,39 @@ export default function ContactBook() {
                   <h3 className="truncate font-bold text-[#111111] uppercase tracking-widest text-lg">
                     {c.name}
                   </h3>
-                  <div className="mt-2 space-y-2 text-xs font-bold uppercase tracking-widest text-[#666666]">
-                    <div className="flex items-center gap-2">
+                  <div className="mt-2 space-y-2 text-xs font-bold tracking-widest text-[#666666]">
+                    <Link
+                      to={`tel:${c.phone}`}
+                      target="_blank"
+                      className="flex items-center gap-2"
+                    >
                       <Phone className="h-4 w-4 text-[#111111] stroke-[2px]" />
                       {c.phone}
-                    </div>
+                    </Link>
                     {c.email && (
-                      <div className="flex items-center gap-2 truncate">
+                      <Link
+                        to={`mailto:${c.email}`}
+                        target="_blank"
+                        className="flex items-center gap-2 truncate"
+                      >
                         <Mail className="h-4 w-4 text-[#111111] stroke-[2px]" />
                         {c.email}
+                      </Link>
+                    )}
+                    {c.notes && (
+                      <div className="flex items-center gap-2 truncate">
+                        <FileTextIcon className="h-4 w-4 text-[#111111] stroke-[2px]" />
+                        {c.notes}
                       </div>
                     )}
+                    <Link
+                      to={`https://wa.me/${c.phone}`}
+                      target="_blank"
+                      className="flex items-center gap-2"
+                    >
+                      <FaWhatsapp className="h-4 w-4 text-[#111111] stroke-[2px]" />
+                      Chat on Whatsapp
+                    </Link>
                   </div>
                 </div>
               </div>
