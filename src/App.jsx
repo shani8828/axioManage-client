@@ -15,6 +15,8 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 import Footer from "./components/Footer";
 import CacheSystem from "./pages/CacheSystem";
 import Attendance from "./pages/Attendance";
+import Support from "./pages/Support";
+import Supporters from "./pages/Supporters";
 
 export default function App() {
   return (
@@ -28,6 +30,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/supporters" element={<Supporters />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/diary" element={<Diary />} />
               <Route path="/tasks" element={<Tasks />} />

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Github, Linkedin, Mail, ArrowUpRight, Users } from "lucide-react";
+import { Github, Linkedin, Mail, ArrowUpRight, Users, HelpingHand } from "lucide-react";
 import api from "../utils/api";
 
 export default function Footer() {
@@ -36,6 +36,10 @@ export default function Footer() {
               calm, focused workspace. Built for clarity, consistency, and
               momentum.
             </p>
+            <Link to="/support" className="flex items-center gap-2 border-2 border-[#666666] bg-[#111111] px-4 py-2 text-xs font-bold uppercase tracking-widest text-white shadow-[4px_4px_0px_0px_#666666]">
+              <HelpingHand className="h-4 w-4 text-[#fcf5bf] stroke-[2px]" />
+              Support Us
+            </Link>
           </div>
 
           {/* Right Column: Services */}
