@@ -119,7 +119,7 @@ export default function ExpenseTracker() {
   const maxCategoryValue = Math.max(...Object.values(categoryTotals), 1);
 
   return (
-    <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
       {/* Header */}
       <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-opacity duration-300">
         <div className="flex items-center gap-4">

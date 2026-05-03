@@ -187,7 +187,7 @@ const Attendance = () => {
     );
 
   return (
-    <div className="p-4 max-w-7xl mx-auto pt-20 text-[#111111] bg-white min-h-screen space-y-10">
+    <div className="p-4 max-w-6xl mx-auto pt-20 text-[#111111] bg-white min-h-screen space-y-10">
       <Timeline />
 
       <header className="flex flex-col sm:flex-row justify-between items-end gap-4 border-b border-[#666666]/20 pb-6">

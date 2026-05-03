@@ -102,7 +102,7 @@ export default function FullHabitDashboard() {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-10 min-h-screen bg-white">
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10 min-h-screen bg-white">
       {/* Header */}
       <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#666666]/20 pb-6 transition-opacity duration-300">
         <div>
@@ -115,7 +115,7 @@ export default function FullHabitDashboard() {
                 Axio-Habits
               </h1>
               <p className="text-sm text-[#666666] font-bold uppercase tracking-widest mt-1">
-                Consistency over the last 30 days
+                Track your consistency
               </p>
             </div>
           </div>
@@ -126,7 +126,7 @@ export default function FullHabitDashboard() {
           className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-[#111111] border border-[#111111] text-white font-bold uppercase tracking-widest hover:bg-[#666666] transition-colors text-sm"
         >
           {isFormOpen ? <ChevronUp className="w-4 h-4 stroke-[1.5px]" /> : <Plus className="w-4 h-4 stroke-[1.5px]" />}
-          {isFormOpen ? "CLOSE" : "NEW HABIT"}
+          {isFormOpen ? "CLOSE" : "Add Habit"}
         </button>
       </header>
 
@@ -214,7 +214,7 @@ export default function FullHabitDashboard() {
                         onClick={() => toggleDay(habit._id, day)}
                         className={`w-6 h-6 border transition-colors ${
                           habit.logs?.[day]
-                            ? "bg-[#111111] border-[#111111]"
+                            ? "bg-green-500 border-[#111111]"
                             : "bg-white border-[#666666]/20 hover:border-[#111111]"
                         } ${day === today ? "ring-1 ring-[#111111] ring-offset-1" : ""}`}
                       />
@@ -245,7 +245,7 @@ export default function FullHabitDashboard() {
           </div>
           <div className="flex items-center gap-2 px-3 py-1 border border-[#111111] bg-[#fcf5bf] text-[#111111]">
             <Flame className="w-3 h-3 stroke-[1.5px]" />
-            STREAK ACTIVE
+            Keep STREAK ACTIVE
           </div>
         </div>
       </div>

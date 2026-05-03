@@ -102,7 +102,7 @@ export default function ContactBook() {
   );
 
   return (
-    <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
       {/* Header */}
       <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between border-b-2 border-[#111111] pb-6">
         <div className="flex items-center gap-4">

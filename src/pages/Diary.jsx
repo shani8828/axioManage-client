@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 import api from "../utils/api";
 import {
@@ -13,6 +13,72 @@ import {
   ChevronUp,
 } from "lucide-react";
 
+const DiaryEntry = ({ entry, handleEdit, handleDelete }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showReadMore, setShowReadMore] = useState(false);
+  const contentRef = useRef(null);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      if (contentRef.current.scrollHeight > contentRef.current.clientHeight) {
+        setShowReadMore(true);
+      }
+    }
+  }, [entry.content]);
+
+  return (
+    <article className="group bg-white p-6 sm:p-8 border-2 border-[#111111] hover:shadow-[6px_6px_0px_0px_#111] hover:-translate-y-1 hover:-translate-x-1 transition-all">
+      <div className="relative">
+        <p
+          ref={contentRef}
+          className={`text-[#111111] leading-relaxed whitespace-pre-wrap text-base ${
+            isExpanded ? "" : "line-clamp-5"
+          }`}
+        >
+          {entry.content}
+        </p>
+        {showReadMore && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="mt-3 text-[11px] font-bold uppercase tracking-widest text-[#111111] hover:text-[#ff99c8] transition-colors border-b-2 border-[#111111] pb-0.5 inline-block"
+          >
+            {isExpanded ? "READ LESS" : "READ MORE"}
+          </button>
+        )}
+      </div>
+
+      <div className="mt-8 pt-6 border-t-2 border-[#111111]/10 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <div className="flex items-center gap-2 text-[#111111]/70 bg-[#fcf5bf] px-3 py-1 border-2 border-[#111111]">
+          <Calendar className="w-4 h-4 stroke-[2px] text-[#111111]" />
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#111111]">
+            {new Date(entry.createdAt).toLocaleDateString(undefined, {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+          <button
+            onClick={() => handleEdit(entry)}
+            className="p-2 bg-[#a8defa] text-[#111111] hover:bg-[#111111] hover:text-white transition-all border-2 border-[#111111]"
+          >
+            <Edit3 className="w-4 h-4 stroke-[2px]" />
+          </button>
+          <button
+            onClick={() => handleDelete(entry._id)}
+            className="p-2 bg-[#ff99c8] text-[#111111] hover:bg-[#111111] hover:text-white transition-all border-2 border-[#111111]"
+          >
+            <Trash2 className="w-4 h-4 stroke-[2px]" />
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+};
+
 export default function Diary() {
   const [entries, setEntries] = useState([]);
   const [text, setText] = useState("");
@@ -26,7 +92,7 @@ export default function Diary() {
       setLoading(true);
       const data = await api.get("/diary");
       setEntries(data);
-      toast.success("Diary loaded", { id: toastId });
+      // toast.success("Diary loaded", { id: toastId });
     } catch (err) {
       toast.error(err || "Failed to load diary entries", { id: toastId });
     } finally {
@@ -84,7 +150,7 @@ export default function Diary() {
   };
 
   return (
-    <section className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
       {/* Header */}
       <header className="flex flex-col gap-4 border-b-2 border-[#111111] pb-6 transition-opacity duration-300">
         <div className="flex items-center gap-4">
@@ -180,43 +246,12 @@ export default function Diary() {
           </div>
         ) : (
           entries.map((entry) => (
-            <article
-              key={entry._id}
-              className="group bg-white p-6 sm:p-8 border-2 border-[#111111] hover:shadow-[6px_6px_0px_0px_#111] hover:-translate-y-1 hover:-translate-x-1 transition-all"
-            >
-              <p className="text-[#111111] leading-relaxed whitespace-pre-wrap text-base">
-                {entry.content}
-              </p>
-
-              <div className="mt-8 pt-6 border-t-2 border-[#111111]/10 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                <div className="flex items-center gap-2 text-[#111111]/70 bg-[#fcf5bf] px-3 py-1 border-2 border-[#111111]">
-                  <Calendar className="w-4 h-4 stroke-[2px] text-[#111111]" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#111111]">
-                    {new Date(entry.createdAt).toLocaleDateString(undefined, {
-                      weekday: "long",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-3 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={() => handleEdit(entry)}
-                    className="p-2 bg-[#a8defa] text-[#111111] hover:bg-[#111111] hover:text-white transition-all border-2 border-[#111111]"
-                  >
-                    <Edit3 className="w-4 h-4 stroke-[2px]" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(entry._id)}
-                    className="p-2 bg-[#ff99c8] text-[#111111] hover:bg-[#111111] hover:text-white transition-all border-2 border-[#111111]"
-                  >
-                    <Trash2 className="w-4 h-4 stroke-[2px]" />
-                  </button>
-                </div>
-              </div>
-            </article>
+            <DiaryEntry 
+              key={entry._id} 
+              entry={entry} 
+              handleEdit={handleEdit} 
+              handleDelete={handleDelete} 
+            />
           ))
         )}
       </div>

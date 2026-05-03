@@ -54,9 +54,9 @@ export default function Home() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-white px-5 py-20 md:px-10 md:container mx-auto">
+    <div className="min-h-screen bg-white px-4 sm:px-6 py-20 max-w-6xl mx-auto">
       {/* Hero */}
-      <section className="mx-auto mb-24 max-w-4xl text-center space-y-7 transition-opacity duration-300">
+      <section className="mx-auto mb-24 w-full text-center space-y-7 transition-opacity duration-300">
         <div className="inline-flex items-center gap-2 border-2 border-[#111111] bg-[#fcf5bf] px-4 py-1.5 text-sm font-bold text-[#111111] uppercase tracking-widest shadow-[4px_4px_0px_0px_#111]">
           <Hexagon className="h-4 w-4 stroke-[2px]" />
           Axio-Manage Workspace
@@ -94,8 +94,8 @@ export default function Home() {
 
       {/* Personalized Panel */}
       {user && (
-        <section className="mb-28 transition-opacity duration-300">
-          <div className="mx-2 md:mx-0 border border-[#666666]/20 bg-white p-6 md:p-10 transition-all hover:border-[#111111]">
+        <section className="mb-28 w-full transition-opacity duration-300">
+          <div className="border border-[#666666]/20 bg-white p-6 md:p-10 transition-all hover:border-[#111111]">
             <div className="space-y-6">
               <h2 className="text-xl md:text-2xl lg:text-3xl font-display font-bold text-[#111111] uppercase tracking-widest">
                 Welcome back, {user?.name || "Achiever"}
@@ -124,7 +124,7 @@ export default function Home() {
       )}
 
       {/* Utilities */}
-      <section className="mx-auto max-w-6xl transition-opacity duration-300">
+      <section className="mx-auto w-full transition-opacity duration-300">
         <div className="mb-12 flex items-center gap-6 border-b border-[#666666]/20 pb-4">
           <h2 className="text-2xl font-display font-bold text-[#111111] uppercase tracking-widest">Utilities</h2>
         </div>
@@ -160,7 +160,7 @@ export default function Home() {
       </section>
 
       {/* Why Axio-Manage */}
-      <section className="mx-auto mt-32 max-w-4xl border-2 border-[#111111] bg-[#d0f4e0] p-10 md:p-14 transition-all shadow-[8px_8px_0px_0px_#111]">
+      <section className="mx-auto mt-32 w-full border-2 border-[#111111] bg-[#d0f4e0] p-10 md:p-14 transition-all shadow-[8px_8px_0px_0px_#111]">
         <h2 className="mb-12 text-center text-2xl font-display font-bold text-[#111111] uppercase tracking-widest">
           Why Axio-Manage works
         </h2>

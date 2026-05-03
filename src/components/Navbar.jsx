@@ -35,12 +35,12 @@ export default function Navbar() {
     { name: "Expenses", path: "/expense-tracker", icon: Wallet, color: "hover:bg-[#d0f4e0]" },
     { name: "Contacts", path: "/contact-book", icon: Contact2, color: "hover:bg-[#ff99c8]" },
     // { name: "Cache", path: "/cache", icon: LayoutDashboard, color: "hover:bg-[#a8defa]" },
-    { name: "Attendance", path: "/attendance", icon: Contact2, color: "hover:bg-[#d0f4e0]" },
+    // { name: "Attendance", path: "/attendance", icon: Contact2, color: "hover:bg-[#d0f4e0]" },
   ];
 
   return (
     <nav className="sticky top-0 z-50 bg-[#111111] text-white transition-all border-b-4 border-white">
-      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2 group">
