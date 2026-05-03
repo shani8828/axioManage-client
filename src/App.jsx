@@ -30,8 +30,6 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/supporters" element={<Supporters />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/diary" element={<Diary />} />
               <Route path="/tasks" element={<Tasks />} />
@@ -39,6 +37,8 @@ export default function App() {
               <Route path="/contact-book" element={<ContactBook />} />
               <Route path="/habit-tracker" element={<HabitTracker />} />
               <Route path="/attendance" element={<Attendance />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/supporters" element={<Supporters />} />
             </Route>
             {/* <Route path="/cache" element={<CacheSystem />} /> */}
             <Route path="*" element={<NoPage />} />

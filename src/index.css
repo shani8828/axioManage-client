@@ -18,3 +18,51 @@
   --dark: #111111;
   --muted: #666666;
 }
+
+/* Ultra Thin Smooth Scrollbar */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.992) transparent;
+}
+
+/* Chrome, Edge, Safari */
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(120, 120, 120, 0.35);
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(9, 9, 9, 0.55);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Minimal Smooth Text Selection */
+
+::selection {
+  background: rgba(16, 33, 75, 0.18);
+  color: inherit;
+}
+
+::-moz-selection {
+  background: rgba(16, 33, 75, 0.18);
+  color: inherit;
+}

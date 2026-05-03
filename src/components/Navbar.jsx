@@ -78,7 +78,7 @@ export default function Navbar() {
                 <div className="relative">
                   <button
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className="flex items-center gap-2 p-1 pr-2 transition-all border border-white hover:bg-white hover:text-[#111111]"
+                    className="flex items-center gap-2 p-1 pr-2 transition-all border border-gray-500 hover:bg-white hover:text-[#111111]"
                   >
                     {user?.avatar ? (
                       <img
@@ -114,7 +114,7 @@ export default function Navbar() {
                         </div>
                         <button
                           onClick={handleLogout}
-                          className="flex w-full items-center gap-3 px-3 py-2 text-sm font-bold uppercase tracking-widest text-[#111111] hover:bg-[#ff99c8] transition-colors"
+                          className="flex w-full items-center gap-3 px-3 py-2 text-sm font-bold uppercase tracking-widest text-[#111111] hover:bg-red-400 transition-colors"
                         >
                           <LogOut className="w-4 h-4 stroke-[1.5px]" /> Sign out
                         </button>
@@ -174,7 +174,7 @@ export default function Navbar() {
               {user ? (
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-2 py-3 text-sm font-bold uppercase tracking-widest text-white hover:bg-[#ff99c8] hover:text-[#111111] transition-colors"
+                  className="w-full flex items-center gap-3 px-2 py-3 text-sm font-bold uppercase tracking-widest text-white hover:bg-red-400 hover:text-[#111111] transition-colors"
                 >
                   <LogOut className="w-5 h-5 stroke-[1.5px]" /> SIGN OUT
                 </button>

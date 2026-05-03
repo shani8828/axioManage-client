@@ -2,11 +2,14 @@ import { useState } from "react";
 import { Heart, ShieldCheck, CreditCard, Users, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "../utils/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function Support() {
+  const { user } = useAuth();
   const [amount, setAmount] = useState(100);
   const [customAmount, setCustomAmount] = useState("");
-  const [supporterName, setSupporterName] = useState("");
+  const [supporterName, setSupporterName] = useState(user?.name || "");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null);
 
@@ -53,13 +56,12 @@ export default function Support() {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_order_id: response.razorpay_order_id,
               razorpay_signature: response.razorpay_signature,
-              name: supporterName,
+              name: supporterName || user?.name || "Anonymous",
               amount: finalAmount
             });
             if (result.message === "Payment verified successfully") {
               setStatus("success");
               setCustomAmount("");
-              setSupporterName("");
             } else {
               setStatus("error");
             }
@@ -68,7 +70,9 @@ export default function Support() {
           }
         },
         prefill: {
-          name: supporterName || "Generous Supporter",
+          name: supporterName || user?.name || "Generous Supporter",
+          email: user?.email || "",
+          contact: phone || undefined,
         },
         theme: {
           color: "#111111",
@@ -195,14 +199,29 @@ export default function Support() {
 
           <div className="space-y-4">
             <label className="block text-sm font-bold uppercase tracking-widest text-[#111111]">
-              Your Name (Optional - For Hall of Fame)
+              Your Name (For Hall of Fame)
             </label>
             <input
               type="text"
+              required
               value={supporterName}
               onChange={(e) => setSupporterName(e.target.value)}
-              placeholder="Leave blank for Anonymous"
+              placeholder="e.g. John Doe"
               className="w-full border-2 border-[#111111] bg-white p-4 text-sm font-bold text-[#111111] outline-none focus:bg-[#d0f4e0]/10 focus:shadow-[4px_4px_0px_0px_#111] transition-all uppercase tracking-widest"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <label className="block text-sm font-bold uppercase tracking-widest text-[#111111]">
+              Phone Number (For Payment Receipt)
+            </label>
+            <input
+              type="tel"
+              required
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="e.g. 9876543210"
+              className="w-full border-2 border-[#111111] bg-white p-4 text-sm font-bold text-[#111111] outline-none focus:bg-[#fcf5bf]/10 focus:shadow-[4px_4px_0px_0px_#111] transition-all uppercase tracking-widest"
             />
           </div>
 
